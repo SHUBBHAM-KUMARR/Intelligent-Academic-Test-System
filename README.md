@@ -4,7 +4,7 @@
 </div>
 
   # 🎓 INTELLIGENT ACADEMIC TEST SYSTEM
-  ### *Assess. Adapt. Level Up.*
+  ### *Practise . Calibrate . Level Up*
 
  
 
