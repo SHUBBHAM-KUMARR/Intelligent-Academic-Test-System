@@ -29,3 +29,12 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Database
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+#ssh connection to github
+ssh.bash
