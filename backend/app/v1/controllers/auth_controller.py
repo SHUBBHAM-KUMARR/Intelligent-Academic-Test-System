@@ -147,7 +147,7 @@ class AuthController:
     def profile():
         """Get the profile of the currently authenticated user."""
         auth_header = request.headers.get("Authorization")
-        if not auth_header or not auth_header.startswith("Bearer"):
+        if not auth_header or not auth_header.startswith("Bearer "):
             return jsonify({"error": "Authorization token required"}), 401
 
         token = auth_header.split(" ")[1].strip()
