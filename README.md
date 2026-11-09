@@ -17,4 +17,23 @@
 - **Analytics and Reporting**: Educators can access detailed analytics and reports on student performance, helping to identify areas for improvement.
 - **Secure and Scalable**: The system is designed with security in mind, ensuring that student data is protected. It can also scale to accommodate a large number of users.
 
-### PROJECT STRUCTURE
+### Project Structure
+
+```text
+iats/
+├── backend/                 # Flask REST API backend
+│   ├── app/                 # Application factory, routes, controllers, models, schemas
+│   ├── run.py               # Server startup entry point
+│   └── README.md            # Backend setup and API documentation
+├── repo_images/             # Assets and banners
+├── CONTRIBUTING.md           # Contribution guidelines & code standards
+├── LICENSE                  # Project license
+└── README.md                # Project overview
+```
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) to learn how to set up your local environment, follow our branch and commit conventions, and submit pull requests.
+
