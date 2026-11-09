@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="/repo_images//header.png" alt="Intelligent Academic Test System Banner" width="100%" />
+  <img src="/repo_images/header.png" alt="Intelligent Academic Test System Banner" width="100%" />
 </div>
 
   # 🎓 INTELLIGENT ACADEMIC TEST SYSTEM
