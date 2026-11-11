@@ -29,7 +29,7 @@ export default function App() {
 
     return (
         <div>
-            <h1>Backend Data</h1>
+            <h1></h1>
 
             <pre>{JSON.stringify(data, null, 2)}</pre>
         </div>
