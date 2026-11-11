@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function Home() {
+export default function App() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -9,11 +9,12 @@ export default function Home() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get("http://127.0.0.1:5000");
-
+                const serverUrl = import.meta.env.VITE_SERVER_URL || "http://127.0.0.1:5000";
+                const response = await axios.get(serverUrl);
+                console.log("respose1: ", response.data);
                 setData(response.data);
-            } catch (error) {
-                setError(error.message);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : String(err));
             } finally {
                 setLoading(false);
             }

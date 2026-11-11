@@ -8,6 +8,14 @@ class Config(DatabaseConfig):
     """Base configuration class."""
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
     DEBUG = os.getenv("FLASK_DEBUG", "True").lower() in ("true", "1", "t")
+    CORS_ORIGINS = [
+        origin.strip()
+        for origin in os.getenv(
+            "CORS_ORIGINS",
+            "http://localhost:5173,http://127.0.0.1:5173",
+        ).split(",")
+        if origin.strip()
+    ]
 
 class DevelopmentConfig(Config):
     """Development environment configuration."""
