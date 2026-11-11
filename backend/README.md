@@ -12,6 +12,7 @@ This is the **RESTful Backend API** for the **Intelligent Academic Test System (
 ### 🛠️ Tech Stack
 
 - **Framework**: Flask 3.1
+- **CORS**: Flask-Cors 6.0
 - **Database & ORM**: SQLAlchemy 2.x & Flask-SQLAlchemy 3.1
 - **Driver**: PyMySQL (MySQL support) / SQLite (development fallback)
 - **Serialization & Validation**: Marshmallow 4.x & Flask-Marshmallow
@@ -26,9 +27,9 @@ This is the **RESTful Backend API** for the **Intelligent Academic Test System (
 backend/
 ├── app/
 │   ├── __init__.py              # Application factory (create_app, registers blueprints & extensions)
-│   ├── extensions.py            # Shared extension instances (db, ma)
+│   ├── extensions.py            # Shared extension instances (cors, db, ma)
 │   ├── config/                  # Environment & database configuration
-│   │   ├── __init__.py          # Base, Development, and Production config classes
+│   │   ├── __init__.py          # Base, Development, and Production config classes (incl. CORS_ORIGINS)
 │   │   └── db_config.py         # Database URI parsing, pooling, and .env loading
 │   ├── models/                  # SQLAlchemy ORM models
 │   │   ├── __init__.py
@@ -45,6 +46,8 @@ backend/
 │           ├── __init__.py
 │           ├── auth_route.py    # /api/v1/auth endpoints
 │           └── home_route.py    # Health/welcome endpoints
+├── tests/                       # Backend test suite
+│   └── auth_test.py
 ├── .env                         # Local environment variables (ignored by git)
 ├── .env.example                 # Template for required environment variables
 ├── requirements.txt             # Project dependencies
@@ -88,9 +91,15 @@ Example `.env`:
 ```env
 FLASK_DEBUG=True
 SECRET_KEY=your-super-secret-key-at-least-32-chars-long
-SQLALCHEMY_DATABASE_URI=mysql+pymysql://username:password@localhost:3306/iats_db
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+
+# For MySQL:
+SQLALCHEMY_DATABASE_URI=mysql+pymysql://username:password@localhost:3306/database_name
 # Or SQLite:
 # SQLALCHEMY_DATABASE_URI=sqlite:///iats.db
+
+SQLALCHEMY_ECHO=False
+DB_POOL_RECYCLE=300
 ```
 
 #### 5. Run the Server
@@ -106,13 +115,14 @@ The server will start at `http://127.0.0.1:5000` with auto-reloading enabled in 
 #### Public & Home
 | Method | Endpoint | Description |
 |---|---|---|
-| `GET` | `/` | API status and welcome message |
+| `GET` | `/` | Returns welcome banner and platform description |
 
 #### Authentication (`/api/v1/auth`)
 | Method | Endpoint | Auth Required | Description |
 |---|---|---|---|
 | `POST` | `/api/v1/auth/register` | No | Register a new student |
 | `POST` | `/api/v1/auth/register/admin` | No | Register a new administrator |
+| `POST` | `/api/v1/auth/admin/register` | No | Alias for `/register/admin` |
 | `POST` | `/api/v1/auth/login` | No | Login (student or admin) and receive JWT |
 | `GET` | `/api/v1/auth/profile` | Yes (`Bearer <token>`) | Get current authenticated user details |
 | `GET` | `/api/v1/auth/me` | Yes (`Bearer <token>`) | Alias for `/profile` |
@@ -121,6 +131,15 @@ The server will start at `http://127.0.0.1:5000` with auto-reloading enabled in 
 ---
 
 ### 📝 Example Payloads
+
+#### Home Endpoint
+`GET /`
+```json
+[
+  { "message": "welcome to IATS" },
+  { "description": "A source-grounded AI testing platform that transforms reference books, course notes, and question repositories into targeted academic assessments." }
+]
+```
 
 #### Student Registration
 `POST /api/v1/auth/register`

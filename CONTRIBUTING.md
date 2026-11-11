@@ -14,6 +14,8 @@ Please take a few moments to review these guidelines before getting started.
   - [Suggesting Features](#suggesting-features)
   - [Code Contributions](#code-contributions)
 - [Development Setup](#-development-setup)
+  - [Backend Setup](#2-set-up-the-backend-environment)
+  - [Frontend Setup](#3-set-up-the-frontend-environment)
 - [Branching & Commit Guidelines](#-branching--commit-guidelines)
 - [Architecture & Coding Standards](#-architecture--coding-standards)
 - [Submitting a Pull Request](#-submitting-a-pull-request)
@@ -30,20 +32,20 @@ We are committed to providing a welcoming, inclusive, and harassment-free enviro
 
 ### Reporting Bugs
 If you encounter a bug or unexpected behavior:
-1. Search [existing GitHub Issues](https://github.com/) to see if the issue has already been reported.
-2. If not, open a new issue using our **Bug Report** template.
+1. Search existing GitHub Issues to see if the issue has already been reported.
+2. If not, open a new issue using the repository's **Bug Report** issue template.
 3. Include:
    - Clear, descriptive title.
    - Steps to reproduce the bug.
    - Expected vs. actual behavior.
-   - Relevant error logs, stack traces, and OS/Python versions.
+   - Relevant error logs, stack traces, and OS / Python / Node.js versions.
 
 ### Suggesting Features
 Ideas and suggestions are always welcome!
 1. Check existing issues to see if a similar feature is already under discussion.
 2. Open a new issue with a detailed explanation of:
    - What problem the feature solves.
-   - Proposed solution or API design.
+   - Proposed solution, UI flow, or API design.
    - Any alternative solutions considered.
 
 ### Code Contributions
@@ -63,7 +65,7 @@ cd iats
 ```
 
 ### 2. Set Up the Backend Environment
-Navigate to the `backend/` directory and configure Python:
+Navigate to `backend/` and set up your Python virtual environment (Python 3.10+, tested on 3.13):
 
 **Windows (PowerShell):**
 ```powershell
@@ -79,20 +81,21 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 3. Install Dependencies
+Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure Local Environment Variables
-Create your local `.env` file from the provided template:
+Create `backend/.env` from `backend/.env.example`:
 ```bash
 cp .env.example .env
 ```
-Ensure your `.env` contains valid configuration:
+Ensure `backend/.env` contains valid configuration:
 ```env
 FLASK_DEBUG=True
 SECRET_KEY=dev-secret-key-at-least-32-chars-long
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+
 # For local development with SQLite:
 SQLALCHEMY_DATABASE_URI=sqlite:///iats.db
 
@@ -100,28 +103,55 @@ SQLALCHEMY_DATABASE_URI=sqlite:///iats.db
 # SQLALCHEMY_DATABASE_URI=mysql+pymysql://username:password@localhost:3306/iats_db
 ```
 
-### 5. Run the Server
+Run the backend server:
 ```bash
 python run.py
 ```
-The server will start at `http://127.0.0.1:5000`.
+The API server will start at `http://127.0.0.1:5000`.
+
+### 3. Set Up the Frontend Environment
+In a separate terminal, navigate to `frontend/` (requires Node.js 22+ and npm):
+```bash
+cd frontend
+npm install
+```
+
+Vite is configured with `envDir: './env'` in `frontend/vite.config.ts`. Create `frontend/env/.env` from `frontend/.env.example`:
+```bash
+mkdir -p env
+cp .env.example env/.env
+```
+Ensure `frontend/env/.env` contains:
+```env
+VITE_SERVER_URL=http://127.0.0.1:5000
+VITE_API_URL=http://127.0.0.1:5000/api/v1
+```
+
+Start the frontend dev server:
+```bash
+npm run dev
+```
+The React + Vite client will start at `http://localhost:5173`.
 
 ---
 
 ## 🌿 Branching & Commit Guidelines
 
 ### Branch Naming Conventions
-Create a new branch from `main` or the designated feature branch (`authapisetup`):
+Create a new branch from `dev` (or the target integration branch specified in the issue):
 ```bash
+git checkout dev
+git pull origin dev
 git checkout -b <type>/<short-description>
 ```
 
 Types:
-- `feat/` - New feature or endpoint (e.g. `feat/test-creation-api`)
-- `fix/` - Bug fix (e.g. `fix/auth-token-expiration`)
-- `docs/` - Documentation changes (e.g. `docs/update-contributing`)
-- `refactor/` - Code refactoring without behavioral change
-- `test/` - Adding or improving tests
+- `feat/` or `feature/` — New feature or endpoint (e.g. `feat/test-creation-api`)
+- `fix/` — Bug fix (e.g. `fix/auth-token-expiration`)
+- `docs/` — Documentation changes (e.g. `docs/update-contributing`)
+- `refactor/` — Code refactoring without behavioral change
+- `test/` — Adding or improving tests
+- `chore/` — Maintenance, dependencies, or tooling updates
 
 ### Commit Messages
 We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
@@ -133,56 +163,67 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 
 Examples:
 - `feat(auth): add admin registration endpoint`
-- `fix(schema): resolve validation error on user roll number`
-- `docs(backend): update API endpoint table in readme`
-- `refactor(models): extract shared timestamps into model base`
+- `fix(cors): allow localhost and 127.0.0.1 Vite origins`
+- `docs(readme): update backend and frontend documentation`
+- `chore(env): map frontend and backend environment variables`
+- `test(auth): add registration and login pytest cases`
 
 ---
 
 ## 📐 Architecture & Coding Standards
 
-To maintain clean and maintainable code, follow these principles:
+To maintain clean and maintainable code across both stacks, follow these principles:
 
-### 1. Layered Architecture
-- **Routes (`backend/app/v1/routes/`)**: Pure endpoint definitions mapping URLs and HTTP methods to controller functions. Keep routes thin.
-- **Controllers (`backend/app/v1/controllers/`)**: Parse HTTP requests, validate input via schemas, handle business logic orchestration, and return structured JSON responses.
-- **Models (`backend/app/models/`)**: SQLAlchemy ORM models representing database tables and relationships.
-- **Schemas (`backend/app/schemas/`)**: Marshmallow schemas for validating incoming request payloads and serializing outgoing responses.
-- **Config (`backend/app/config/`)**: Environment-specific settings loaded from `.env`.
+### 1. Project Architecture
+**Backend (`backend/app/`):**
+- **Routes (`app/v1/routes/`)**: Pure endpoint definitions mapping URLs and HTTP methods to controller functions. Keep routes thin.
+- **Controllers (`app/v1/controllers/`)**: Parse HTTP requests, validate input via schemas, handle business logic orchestration, and return structured JSON responses.
+- **Models (`app/models/`)**: SQLAlchemy ORM models representing database tables and relationships.
+- **Schemas (`app/schemas/`)**: Marshmallow schemas for validating incoming request payloads and serializing outgoing responses.
+- **Config & Extensions (`app/config/`, `app/extensions.py`)**: Environment-specific settings loaded from `.env` and shared extension instances (`cors`, `db`, `ma`).
+
+**Frontend (`frontend/src/`):**
+- **Components & Pages (`src/`)**: Functional React components using TypeScript (`.tsx`), hooks, and modular styling.
+- **Environment Access**: Use `import.meta.env.VITE_*` and keep TypeScript definitions updated in `src/vite-env.d.ts`.
 
 ### 2. Code Quality & Formatting
-- Adhere to **PEP 8** style guidelines.
-- Use explicit type annotations where helpful.
-- Keep functions modular and focused on a single responsibility.
-- Clean up any unused imports or commented-out code before opening a PR.
+- **Backend**: Follow **PEP 8**, use type annotations where helpful, keep functions focused, and remove unused imports before committing.
+- **Frontend**: Pass TypeScript type checking (`tsc -b`) and ESLint (`npm run lint`) with zero errors; keep React hooks and dependencies clean.
 
 ### 3. Security & Validation
-- **Never commit `.env` or sensitive credentials.**
-- Always validate incoming client input using Marshmallow schemas.
-- Hash passwords using Werkzeug's secure hashing (`generate_password_hash` / `set_password()`). Never store plaintext passwords.
-- Always use parameterized queries via SQLAlchemy to prevent SQL injection.
-- Catch database exceptions, invoke `db.session.rollback()`, and return clean JSON error responses with appropriate HTTP status codes (`400`, `401`, `403`, `404`, `409`, `500`).
+- **Never commit `.env` files (`backend/.env`, `frontend/env/.env`) or sensitive credentials.**
+- **CORS**: Keep `CORS_ORIGINS` explicit rather than using wildcard `*` when credentials are enabled.
+- **Input & Auth**: Validate incoming backend payloads using Marshmallow schemas, hash passwords with Werkzeug (`set_password()` / `check_password()`), and use parameterized SQLAlchemy queries.
+- **Error Handling**: Catch database exceptions, call `db.session.rollback()`, and return structured JSON responses with appropriate HTTP status codes (`400`, `401`, `403`, `404`, `409`, `500`).
 
 ---
 
 ## 🚀 Submitting a Pull Request
 
-1. **Keep PRs Focused**: Keep your pull request scoped to a single feature or bugfix. Smaller PRs are reviewed and merged much faster.
-2. **Test Locally**: Verify that your endpoints work correctly and do not break existing functionality:
-   ```bash
-   python backend/run.py
-   ```
-3. **Push to Your Fork**:
+1. **Keep PRs Focused**: Scope your pull request to a single feature or fix. Smaller PRs are reviewed and merged faster.
+2. **Test Locally**:
+   - **Backend**: Run the test suite and verify the server starts cleanly:
+     ```bash
+     cd backend
+     pytest
+     python run.py
+     ```
+   - **Frontend**: Verify linting and production build succeed with zero errors:
+     ```bash
+     cd frontend
+     npm run lint
+     npm run build
+     ```
+3. **Push to Your Branch**:
    ```bash
    git push origin <your-branch-name>
    ```
 4. **Open a Pull Request**:
-   - Navigate to the repository on GitHub and click **Compare & pull request**.
+   - Open a PR targeting `dev` (unless instructed otherwise).
    - Fill out the provided [Pull Request Template](.github/pull_request_template/pull_request.md).
    - Link any related issues (e.g., `Closes #12`).
-5. **Review & Iterate**: Address any reviewer feedback or requested changes promptly.
+5. **Review & Iterate**: Address reviewer feedback promptly.
 
 ---
 
 Thank you for contributing to the **Intelligent Academic Test System**! 🎉
-
