@@ -24,3 +24,8 @@ env/.env
 *.njsproj
 *.sln
 *.sw?
+
+# Agent instructions & prompt memory
+AGENT.md
+.agent*
+

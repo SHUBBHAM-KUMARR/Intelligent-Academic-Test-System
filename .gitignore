@@ -42,3 +42,8 @@ instance/
 #ssh connection
 ssh.bash
 
+# Agent instructions & prompt memory
+frontend/AGENT.md
+.agent*
+
+
