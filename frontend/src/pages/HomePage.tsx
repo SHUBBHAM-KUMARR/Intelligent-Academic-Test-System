@@ -740,7 +740,7 @@ export const HomePage: React.FC = () => {
                 Launch Live Demo
               </a>
               <a
-                href="https://github.com"
+                href="https://github.com/shubbham-kumarr/intelligent-academic-test-system"
                 target="_blank"
                 rel="noreferrer"
                 className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#FFFFFF] hover:bg-[#F4F1EA] border border-[#DDD7CC] text-sm text-[#18191B] font-medium transition-colors"

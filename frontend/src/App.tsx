@@ -1,27 +1,20 @@
-import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 import { HomePage } from "./pages/HomePage";
-import axios from "axios";
+import { AuthPage } from "./pages/AuthPage";
 
 export default function App() {
-  const [, setServerStatus] = useState<"checking" | "online" | "offline">("checking");
-
-  useEffect(() => {
-    const checkBackend = async () => {
-      try {
-        const serverUrl = import.meta.env.VITE_SERVER_URL || "http://127.0.0.1:5000";
-        await axios.get(serverUrl, { timeout: 3000 });
-        setServerStatus("online");
-      } catch {
-        setServerStatus("offline");
-      }
-    };
-
-    checkBackend();
-  }, []);
-
   return (
-    <div className="relative">
-      <HomePage />
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/login" element={<Navigate to="/auth?mode=login" replace />} />
+          <Route path="/register" element={<Navigate to="/auth?mode=register" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

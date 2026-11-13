@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import {
   GraduationCapIcon,
   ArrowRightIcon,
   MenuIcon,
   XIcon,
   SparklesIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  LogOutIcon,
+  UserIcon
 } from "./Icons";
 
 interface HeaderProps {
@@ -16,6 +20,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
           }`}
         >
           {/* Brand Logo */}
-          <a href="#" className="flex items-center gap-3 group focus:outline-none">
+          <Link to="/" className="flex items-center gap-3 group focus:outline-none">
             <div className="w-9 h-9 rounded-full bg-[#EBF3EE] border border-[#D2E3D8] flex items-center justify-center text-[#1E3A2F] transition-transform duration-200 group-hover:scale-105">
               <GraduationCapIcon size={19} />
             </div>
@@ -53,12 +60,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
                 Academic Test Engine
               </span>
             </div>
-          </a>
+          </Link>
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-1 lg:gap-2">
             <a
-              href="#features"
+              href="/#features"
               className="text-[13.5px] font-medium text-[#585E6A] hover:text-[#18191B] px-3.5 py-1.5 rounded-full hover:bg-[#F3F0EA] transition-colors"
             >
               Features
@@ -78,7 +85,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
               {activeDropdown === "assessments" && (
                 <div className="absolute top-full left-0 mt-2 w-72 rounded-2xl bg-[#FFFFFF] border border-[#E0DBCF] p-3 shadow-[0_12px_36px_rgba(0,0,0,0.08)]">
                   <a
-                    href="#how-it-works"
+                    href="/#how-it-works"
                     className="flex flex-col p-2.5 rounded-xl hover:bg-[#F6F4EE] transition-colors group"
                   >
                     <span className="text-[13px] font-semibold text-[#18191B] group-hover:text-[#1E3A2F] transition-colors">
@@ -89,7 +96,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
                     </span>
                   </a>
                   <a
-                    href="#adaptive"
+                    href="/#interactive-demo"
                     className="flex flex-col p-2.5 rounded-xl hover:bg-[#F6F4EE] transition-colors group"
                   >
                     <span className="text-[13px] font-semibold text-[#18191B] group-hover:text-[#1E3A2F] transition-colors">
@@ -100,7 +107,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
                     </span>
                   </a>
                   <a
-                    href="#grading"
+                    href="/#features"
                     className="flex flex-col p-2.5 rounded-xl hover:bg-[#F6F4EE] transition-colors group"
                   >
                     <span className="text-[13px] font-semibold text-[#18191B] group-hover:text-[#1E3A2F] transition-colors">
@@ -115,45 +122,77 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
             </div>
 
             <a
-              href="#how-it-works"
+              href="/#how-it-works"
               className="text-[13.5px] font-medium text-[#585E6A] hover:text-[#18191B] px-3.5 py-1.5 rounded-full hover:bg-[#F3F0EA] transition-colors"
             >
               How it Works
             </a>
             <a
-              href="#interactive-demo"
+              href="/#interactive-demo"
               className="text-[13.5px] font-medium text-[#585E6A] hover:text-[#18191B] px-3.5 py-1.5 rounded-full hover:bg-[#F3F0EA] transition-colors flex items-center gap-1.5"
             >
               <SparklesIcon size={14} className="text-[#1E3A2F]" />
               <span>Live Playground</span>
             </a>
             <a
-              href="#architecture"
+              href="/#architecture"
               className="text-[13.5px] font-medium text-[#585E6A] hover:text-[#18191B] px-3.5 py-1.5 rounded-full hover:bg-[#F3F0EA] transition-colors"
             >
               Architecture
             </a>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons / Auth State */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <a
-              href="#login"
-              className="hidden sm:inline-flex text-[13px] font-medium text-[#585E6A] hover:text-[#18191B] px-3.5 py-2 transition-colors"
-            >
-              Sign In
-            </a>
+            {isAuthenticated && user ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/auth"
+                  className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F2EFE9] border border-[#DDD7CC] hover:border-[#BFB9AC] text-xs font-medium text-[#18191B] transition-colors"
+                >
+                  <UserIcon size={14} className="text-[#1E3A2F]" />
+                  <span className="max-w-[120px] truncate">{user.name}</span>
+                  <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-[#EBF3EE] text-[#1E3A2F] border border-[#D2E3D8]">
+                    {user.role}
+                  </span>
+                </Link>
 
-            <button
-              onClick={onOpenTestModal}
-              className="relative inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] font-semibold bg-[#1E3A2F] text-[#FAF9F6] hover:bg-[#162C23] shadow-sm transition-all duration-200 transform active:scale-95 group"
-            >
-              <span>Get Started</span>
-              <ArrowRightIcon
-                size={14}
-                className="transition-transform duration-200 group-hover:translate-x-0.5"
-              />
-            </button>
+                <button
+                  type="button"
+                  onClick={logout}
+                  title="Sign Out"
+                  className="p-2 rounded-full text-[#585E6A] hover:text-[#991B1B] hover:bg-[#FDF2F2] transition-colors"
+                >
+                  <LogOutIcon size={16} />
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/auth?mode=login"
+                  className="hidden sm:inline-flex text-[13px] font-medium text-[#585E6A] hover:text-[#18191B] px-3.5 py-2 transition-colors"
+                >
+                  Sign In
+                </Link>
+
+                <button
+                  onClick={() => {
+                    if (onOpenTestModal) {
+                      onOpenTestModal();
+                    } else {
+                      navigate("/auth?mode=register");
+                    }
+                  }}
+                  className="relative inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] font-semibold bg-[#1E3A2F] text-[#FAF9F6] hover:bg-[#162C23] shadow-sm transition-all duration-200 transform active:scale-95 group"
+                >
+                  <span>Get Started</span>
+                  <ArrowRightIcon
+                    size={14}
+                    className="transition-transform duration-200 group-hover:translate-x-0.5"
+                  />
+                </button>
+              </>
+            )}
 
             {/* Mobile Menu Toggle */}
             <button
@@ -170,21 +209,21 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
         {mobileMenuOpen && (
           <div className="md:hidden mt-3 p-5 rounded-3xl bg-[#FFFFFF] border border-[#DDD7CC] shadow-[0_12px_36px_rgba(0,0,0,0.08)] flex flex-col gap-3">
             <a
-              href="#features"
+              href="/#features"
               onClick={() => setMobileMenuOpen(false)}
               className="text-sm font-medium text-[#373A42] hover:text-[#1E3A2F] py-2 border-b border-[#ECE7DE]"
             >
               Features
             </a>
             <a
-              href="#how-it-works"
+              href="/#how-it-works"
               onClick={() => setMobileMenuOpen(false)}
               className="text-sm font-medium text-[#373A42] hover:text-[#1E3A2F] py-2 border-b border-[#ECE7DE]"
             >
               How it Works
             </a>
             <a
-              href="#interactive-demo"
+              href="/#interactive-demo"
               onClick={() => setMobileMenuOpen(false)}
               className="text-sm font-medium text-[#373A42] hover:text-[#1E3A2F] py-2 border-b border-[#ECE7DE] flex items-center justify-between"
             >
@@ -194,29 +233,47 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
               </span>
             </a>
             <a
-              href="#architecture"
+              href="/#architecture"
               onClick={() => setMobileMenuOpen(false)}
               className="text-sm font-medium text-[#373A42] hover:text-[#1E3A2F] py-2 border-b border-[#ECE7DE]"
             >
               Architecture & API
             </a>
+
             <div className="pt-2 flex flex-col gap-2">
-              <a
-                href="#login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center text-sm font-medium text-[#585E6A] py-2.5 rounded-full hover:bg-[#F3F0EA]"
-              >
-                Sign In
-              </a>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  if (onOpenTestModal) onOpenTestModal();
-                }}
-                className="w-full py-2.5 rounded-full text-sm font-semibold bg-[#1E3A2F] text-[#FAF9F6] hover:bg-[#162C23] text-center"
-              >
-                Create Academic Test
-              </button>
+              {isAuthenticated && user ? (
+                <div className="flex flex-col gap-2">
+                  <div className="text-xs text-[#575C66] px-2">
+                    Signed in as <strong className="text-[#18191B]">{user.name}</strong> ({user.role})
+                  </div>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full py-2.5 rounded-full text-sm font-semibold bg-[#FDF2F2] text-[#991B1B] border border-[#E07A7A] text-center"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link
+                    to="/auth?mode=login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-center text-sm font-medium text-[#585E6A] py-2.5 rounded-full hover:bg-[#F3F0EA]"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/auth?mode=register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-2.5 rounded-full text-sm font-semibold bg-[#1E3A2F] text-[#FAF9F6] hover:bg-[#162C23] text-center"
+                  >
+                    Create Academic Account
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
