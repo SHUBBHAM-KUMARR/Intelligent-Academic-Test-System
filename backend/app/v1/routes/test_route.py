@@ -40,3 +40,21 @@ def explain():
 def metadata():
     """Retrieve supported difficulty levels and taxonomy metadata."""
     return TestController.metadata()
+
+
+@test_bp.route("/submissions/me", methods=["GET"])
+def get_my_submissions():
+    """Retrieve all test submissions for the authenticated student."""
+    return TestController.get_my_submissions()
+
+
+@test_bp.route("/admin/students", methods=["GET"])
+def get_admin_students():
+    """Retrieve enrolled student summaries for the admin dashboard."""
+    return TestController.get_admin_students()
+
+
+@test_bp.route("/admin/students/<int:student_id>/submissions", methods=["GET"])
+def get_admin_student_submissions(student_id: int):
+    """Retrieve full test submissions history for a specific student."""
+    return TestController.get_admin_student_submissions(student_id)

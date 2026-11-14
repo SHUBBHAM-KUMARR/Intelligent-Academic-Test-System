@@ -23,20 +23,28 @@ test_schema = TestSchema()
 submission_schema = TestSubmissionSchema()
 
 
-def get_current_user_id() -> int | None:
-    """Extract authenticated user id from Authorization header if present."""
+def get_current_user_and_role() -> tuple[int | None, str | None]:
+    """Extract authenticated user id and role from Authorization header if present."""
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
-        return None
+        return None, None
 
     token = auth_header.split(" ")[1].strip()
     secret_key = current_app.config.get("SECRET_KEY", "dev-secret-key-change-in-production-min32")
 
     try:
         payload = jwt.decode(token, secret_key, algorithms=["HS256"])
-        return int(payload.get("sub"))
+        user_id = int(payload.get("sub"))
+        role = payload.get("role", "student")
+        return user_id, role
     except Exception:
-        return None
+        return None, None
+
+
+def get_current_user_id() -> int | None:
+    """Extract authenticated user id from Authorization header if present."""
+    user_id, _ = get_current_user_and_role()
+    return user_id
 
 
 class TestController:
@@ -288,4 +296,205 @@ class TestController:
             "bloom_levels": BLOOM_LEVELS,
             "question_types": QUESTION_TYPES,
             "test_statuses": TEST_STATUSES,
+        }), 200
+
+    @staticmethod
+    def get_my_submissions():
+        """
+        Retrieve all submissions for the currently authenticated student.
+        GET /api/v1/test/submissions/me
+        """
+        student_id = get_current_user_id()
+        if not student_id:
+            return jsonify({"error": "Authentication required to access student submissions"}), 401
+
+        submissions = (
+            SubmissionModel.query.filter_by(student_id=student_id)
+            .order_by(SubmissionModel.submitted_at.desc())
+            .all()
+        )
+
+        test_ids = list({s.test_id for s in submissions if s.test_id})
+        tests_by_id = {}
+        if test_ids:
+            tests = TestModel.query.filter(TestModel.id.in_(test_ids)).all()
+            tests_by_id = {t.id: t for t in tests}
+
+        serialized = []
+        scores = []
+        passed_count = 0
+
+        for sub in submissions:
+            sub_dict = sub.to_dict()
+            t = tests_by_id.get(sub.test_id)
+            if t:
+                sub_dict["test"] = {
+                    "id": t.id,
+                    "title": t.title,
+                    "subject": t.subject,
+                    "topic": t.topic,
+                    "difficulty": t.difficulty,
+                    "duration_minutes": t.duration_minutes,
+                    "passing_percentage": t.passing_percentage,
+                    "total_marks": t.total_marks,
+                    "is_adaptive": t.is_adaptive,
+                }
+            else:
+                sub_dict["test"] = {
+                    "id": sub.test_id,
+                    "title": f"Test #{sub.test_id}",
+                    "subject": "General",
+                    "topic": "",
+                    "difficulty": "medium",
+                    "duration_minutes": 30,
+                    "passing_percentage": 40.0,
+                    "total_marks": sub.total_marks,
+                    "is_adaptive": False,
+                }
+            serialized.append(sub_dict)
+            scores.append(sub.percentage)
+            if sub.passed:
+                passed_count += 1
+
+        total_tests = len(submissions)
+        avg_score = round(sum(scores) / total_tests, 1) if total_tests > 0 else 0.0
+        latest_calib = round(submissions[0].calibration_score, 1) if total_tests > 0 else 50.0
+
+        summary = {
+            "total_tests": total_tests,
+            "passed_tests": passed_count,
+            "failed_tests": total_tests - passed_count,
+            "average_score": avg_score,
+            "latest_calibration": latest_calib,
+            "highest_score": max(scores) if scores else 0.0,
+        }
+
+        return jsonify({
+            "submissions": serialized,
+            "summary": summary,
+        }), 200
+
+    @staticmethod
+    def get_admin_students():
+        """
+        List all enrolled students with performance summaries for the admin dashboard.
+        GET /api/v1/test/admin/students
+        """
+        user_id, role = get_current_user_and_role()
+        if not user_id or role not in ["admin", "superadmin", "educator"]:
+            return jsonify({"error": "Admin access required"}), 403
+
+        students = UserModel.query.filter_by(role="student").order_by(UserModel.name.asc()).all()
+        # If no users explicitly marked 'student', return all users except this admin
+        if not students:
+            students = UserModel.query.filter(UserModel.id != user_id).order_by(UserModel.name.asc()).all()
+
+        student_ids = [s.id for s in students]
+        all_submissions = []
+        if student_ids:
+            all_submissions = SubmissionModel.query.filter(SubmissionModel.student_id.in_(student_ids)).all()
+
+        sub_by_student: dict[int, list[SubmissionModel]] = {}
+        for sub in all_submissions:
+            sub_by_student.setdefault(sub.student_id, []).append(sub)
+
+        students_summary = []
+        for s in students:
+            subs = sub_by_student.get(s.id, [])
+            subs_sorted = sorted(subs, key=lambda x: x.submitted_at or datetime.min, reverse=True)
+            total = len(subs)
+            passed = sum(1 for x in subs if x.passed)
+            avg_score = round(sum(x.percentage for x in subs) / total, 1) if total > 0 else 0.0
+            latest_calib = round(subs_sorted[0].calibration_score, 1) if subs_sorted else 50.0
+            last_active = subs_sorted[0].submitted_at.isoformat() if subs_sorted and subs_sorted[0].submitted_at else (s.created_at.isoformat() if s.created_at else None)
+
+            students_summary.append({
+                "id": s.id,
+                "name": s.name,
+                "email": s.email,
+                "role": s.role,
+                "enrolled_at": s.created_at.isoformat() if s.created_at else None,
+                "tests_taken": total,
+                "tests_passed": passed,
+                "average_score": avg_score,
+                "latest_calibration": latest_calib,
+                "last_active": last_active,
+            })
+
+        return jsonify({
+            "students": students_summary,
+            "total_students": len(students_summary),
+            "total_submissions": len(all_submissions),
+        }), 200
+
+    @staticmethod
+    def get_admin_student_submissions(student_id: int):
+        """
+        List all tests taken by a specific student for review by an admin.
+        GET /api/v1/test/admin/students/<student_id>/submissions
+        """
+        user_id, role = get_current_user_and_role()
+        if not user_id or role not in ["admin", "superadmin", "educator"]:
+            return jsonify({"error": "Admin access required"}), 403
+
+        student = db.session.get(UserModel, student_id)
+        if not student:
+            return jsonify({"error": f"Student with ID {student_id} not found"}), 404
+
+        submissions = (
+            SubmissionModel.query.filter_by(student_id=student_id)
+            .order_by(SubmissionModel.submitted_at.desc())
+            .all()
+        )
+
+        test_ids = list({s.test_id for s in submissions if s.test_id})
+        tests_by_id = {}
+        if test_ids:
+            tests = TestModel.query.filter(TestModel.id.in_(test_ids)).all()
+            tests_by_id = {t.id: t for t in tests}
+
+        serialized = []
+        for sub in submissions:
+            sub_dict = sub.to_dict()
+            t = tests_by_id.get(sub.test_id)
+            if t:
+                sub_dict["test"] = {
+                    "id": t.id,
+                    "title": t.title,
+                    "subject": t.subject,
+                    "topic": t.topic,
+                    "difficulty": t.difficulty,
+                    "duration_minutes": t.duration_minutes,
+                    "passing_percentage": t.passing_percentage,
+                    "total_marks": t.total_marks,
+                    "is_adaptive": t.is_adaptive,
+                }
+            else:
+                sub_dict["test"] = {
+                    "id": sub.test_id,
+                    "title": f"Test #{sub.test_id}",
+                    "subject": "General",
+                    "topic": "",
+                    "difficulty": "medium",
+                    "duration_minutes": 30,
+                    "passing_percentage": 40.0,
+                    "total_marks": sub.total_marks,
+                    "is_adaptive": False,
+                }
+            serialized.append(sub_dict)
+
+        total_tests = len(submissions)
+        scores = [s.percentage for s in submissions]
+        avg_score = round(sum(scores) / total_tests, 1) if total_tests > 0 else 0.0
+        passed_count = sum(1 for s in submissions if s.passed)
+
+        return jsonify({
+            "student": student.to_dict(),
+            "submissions": serialized,
+            "summary": {
+                "total_tests": total_tests,
+                "passed_tests": passed_count,
+                "average_score": avg_score,
+                "latest_calibration": round(submissions[0].calibration_score, 1) if submissions else 50.0,
+            }
         }), 200

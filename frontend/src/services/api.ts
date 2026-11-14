@@ -56,6 +56,79 @@ export interface SubmissionResult {
   submitted_at: string;
 }
 
+export interface SubmissionItem {
+  id: number;
+  test_id: number;
+  student_id: number;
+  score: number;
+  total_marks: number;
+  percentage: number;
+  calibration_score: number;
+  answers: Array<{ question_id: number; selected_option?: number | null; answer_text?: string; time_spent_seconds?: number }>;
+  evaluations?: QuestionEvaluation[];
+  passed: boolean;
+  submitted_at: string;
+  test?: {
+    id: number;
+    title: string;
+    subject: string;
+    topic: string;
+    difficulty: string;
+    duration_minutes: number;
+    passing_percentage: number;
+    total_marks: number;
+    is_adaptive: boolean;
+  };
+}
+
+export interface StudentSummary {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  enrolled_at?: string;
+  tests_taken: number;
+  tests_passed: number;
+  average_score: number;
+  latest_calibration: number;
+  last_active?: string;
+}
+
+export interface StudentDashboardData {
+  submissions: SubmissionItem[];
+  summary: {
+    total_tests: number;
+    passed_tests: number;
+    failed_tests: number;
+    average_score: number;
+    latest_calibration: number;
+    highest_score: number;
+  };
+}
+
+export interface AdminStudentsData {
+  students: StudentSummary[];
+  total_students: number;
+  total_submissions: number;
+}
+
+export interface AdminStudentDetailData {
+  student: {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
+    created_at?: string;
+  };
+  submissions: SubmissionItem[];
+  summary: {
+    total_tests: number;
+    passed_tests: number;
+    average_score: number;
+    latest_calibration: number;
+  };
+}
+
 export interface SourceChunk {
   chunk_id: number;
   section: string;
@@ -133,6 +206,24 @@ export const api = {
   // 7. Taxonomy and metadata
   getMetadata: async () => {
     const res = await axios.get(`${API_BASE}/api/v1/test/metadata`);
+    return res.data;
+  },
+
+  // 8. Student Dashboard: Get my submissions and aggregate metrics
+  getMySubmissions: async (): Promise<StudentDashboardData> => {
+    const res = await axios.get(`${API_BASE}/api/v1/test/submissions/me`);
+    return res.data;
+  },
+
+  // 9. Admin Dashboard: Get enrolled students list and metrics
+  getAdminStudents: async (): Promise<AdminStudentsData> => {
+    const res = await axios.get(`${API_BASE}/api/v1/test/admin/students`);
+    return res.data;
+  },
+
+  // 10. Admin Dashboard: Get test submissions for a specific student
+  getAdminStudentSubmissions: async (studentId: number): Promise<AdminStudentDetailData> => {
+    const res = await axios.get(`${API_BASE}/api/v1/test/admin/students/${studentId}/submissions`);
     return res.data;
   },
 };

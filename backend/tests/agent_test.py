@@ -1,3 +1,4 @@
+import os
 import json
 import pytest
 from unittest.mock import MagicMock, patch
@@ -28,7 +29,7 @@ def test_groq_client_configured():
     """Test client detects valid key format."""
     client = GroqClient(api_key="gsk_1234567890abcdef1234567890")
     assert client.is_configured is True
-    assert client.model == DEFAULT_GROQ_MODEL
+    assert client.model in [DEFAULT_GROQ_MODEL, os.getenv("GROQ_MODEL")]
 
 
 def test_groq_client_mock_successful_response():

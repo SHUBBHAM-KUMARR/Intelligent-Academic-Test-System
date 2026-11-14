@@ -257,3 +257,121 @@ def test_source_upload_empty(client):
     res = client.post("/api/v1/source/upload", json={})
     assert res.status_code == 400
     assert "error" in res.get_json()
+
+
+# ============================================================================
+# 8. Dashboard Endpoints (Student & Admin)
+# ============================================================================
+
+def test_get_my_submissions_unauthenticated(client):
+    """Student submissions require a valid Authorization header."""
+    res = client.get("/api/v1/test/submissions/me")
+    assert res.status_code == 401
+    assert "error" in res.get_json()
+
+
+def test_get_my_submissions_authenticated(client, sample_test, app):
+    """Authenticated student can retrieve their submission history and statistics."""
+    from app.models.user_model import UserModel
+    from app.models.test_model import SubmissionModel
+    from app.v1.controllers.auth_controller import generate_token
+
+    with app.app_context():
+        student = UserModel(name="Jane Student", email="jane@univ.edu", password="Password123!", role="student")
+        db.session.add(student)
+        db.session.commit()
+        token = generate_token(student)
+
+        # Create 2 submissions
+        sub1 = SubmissionModel(
+            test_id=sample_test.id,
+            student_id=student.id,
+            score=2.0,
+            total_marks=2.0,
+            percentage=100.0,
+            calibration_score=68.5,
+            answers=[{"question_id": 1, "selected_option": 0}],
+            evaluations=[{"question_id": 1, "is_correct": True}],
+            passed=True,
+        )
+        sub2 = SubmissionModel(
+            test_id=sample_test.id,
+            student_id=student.id,
+            score=1.0,
+            total_marks=2.0,
+            percentage=50.0,
+            calibration_score=55.0,
+            answers=[{"question_id": 1, "selected_option": 0}],
+            evaluations=[{"question_id": 1, "is_correct": True}],
+            passed=True,
+        )
+        db.session.add_all([sub1, sub2])
+        db.session.commit()
+
+    headers = {"Authorization": f"Bearer {token}"}
+    res = client.get("/api/v1/test/submissions/me", headers=headers)
+    assert res.status_code == 200
+    data = res.get_json()
+    assert len(data["submissions"]) == 2
+    assert data["summary"]["total_tests"] == 2
+    assert data["summary"]["passed_tests"] == 2
+    assert data["summary"]["average_score"] == 75.0
+    assert "test" in data["submissions"][0]
+    assert data["submissions"][0]["test"]["title"] == "Algorithms Midterm"
+
+
+def test_admin_dashboard_endpoints(client, sample_test, app):
+    """Admin can view all students and their detailed test submissions."""
+    from app.models.user_model import UserModel
+    from app.models.test_model import SubmissionModel
+    from app.v1.controllers.auth_controller import generate_token
+
+    with app.app_context():
+        admin = UserModel(name="Prof Admin", email="admin@univ.edu", password="Password123!", role="admin")
+        student = UserModel(name="Bob Learner", email="bob@univ.edu", password="Password123!", role="student")
+        db.session.add_all([admin, student])
+        db.session.commit()
+
+        admin_token = generate_token(admin)
+        student_token = generate_token(student)
+
+        sub = SubmissionModel(
+            test_id=sample_test.id,
+            student_id=student.id,
+            score=2.0,
+            total_marks=2.0,
+            percentage=100.0,
+            calibration_score=72.0,
+            answers=[],
+            evaluations=[],
+            passed=True,
+        )
+        db.session.add(sub)
+        db.session.commit()
+        student_id = student.id
+
+    # 1. Student trying to access admin endpoint -> 403 Forbidden
+    student_headers = {"Authorization": f"Bearer {student_token}"}
+    res_forbidden = client.get("/api/v1/test/admin/students", headers=student_headers)
+    assert res_forbidden.status_code == 403
+
+    # 2. Admin accessing student list -> 200 OK
+    admin_headers = {"Authorization": f"Bearer {admin_token}"}
+    res_students = client.get("/api/v1/test/admin/students", headers=admin_headers)
+    assert res_students.status_code == 200
+    data_students = res_students.get_json()
+    assert data_students["total_students"] >= 1
+    target = next((s for s in data_students["students"] if s["id"] == student_id), None)
+    assert target is not None
+    assert target["name"] == "Bob Learner"
+    assert target["tests_taken"] == 1
+    assert target["average_score"] == 100.0
+
+    # 3. Admin accessing specific student's tests -> 200 OK
+    res_student_subs = client.get(f"/api/v1/test/admin/students/{student_id}/submissions", headers=admin_headers)
+    assert res_student_subs.status_code == 200
+    data_subs = res_student_subs.get_json()
+    assert data_subs["student"]["name"] == "Bob Learner"
+    assert len(data_subs["submissions"]) == 1
+    assert data_subs["submissions"][0]["test"]["title"] == "Algorithms Midterm"
+

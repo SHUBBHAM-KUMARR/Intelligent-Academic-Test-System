@@ -25,8 +25,16 @@ class GroqClient:
         model: Optional[str] = None,
         timeout: int = 30
     ):
-        self.api_key = (api_key or os.getenv("GROQ_API_KEY", "")).strip()
-        self.model = model or os.getenv("GROQ_MODEL", DEFAULT_GROQ_MODEL)
+        if api_key is not None:
+            self.api_key = api_key.strip()
+        else:
+            self.api_key = os.getenv("GROQ_API_KEY", "").strip()
+
+        if model is not None:
+            self.model = model
+        else:
+            self.model = os.getenv("GROQ_MODEL", DEFAULT_GROQ_MODEL)
+
         self.timeout = timeout
         self._sdk_client = None
 
