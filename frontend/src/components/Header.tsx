@@ -36,11 +36,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-200 py-3 sm:py-4 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
         <nav
-          className={`flex items-center justify-between px-5 sm:px-7 py-3 rounded-full transition-all duration-200 ${
-            scrolled
+          className={`flex items-center justify-between px-5 sm:px-7 py-3 rounded-full transition-all duration-200 ${scrolled
               ? "bg-[#FFFFFF]/95 backdrop-blur-md border border-[#D8D3C8] shadow-[0_4px_24px_rgba(0,0,0,0.06)]"
               : "bg-[#FFFFFF]/90 backdrop-blur-md border border-[#E4DFD5] shadow-[0_2px_12px_rgba(0,0,0,0.03)]"
-          }`}
+            }`}
         >
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-3 group focus:outline-none">
@@ -50,14 +49,18 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
             <div className="flex flex-col text-left">
               <div className="flex items-center gap-1.5">
                 <span className="font-semibold text-[17px] tracking-tight text-[#18191B] font-['Plus_Jakarta_Sans',sans-serif]">
-                  IATS
+                  IATS&nbsp;&nbsp;
+                   <sup>
+                    <span className="text-[10px] tracking-widest font-mono uppercase px-1.5 py-0.5 rounded bg-[#EBF3EE] text-[#1E3A2F] border border-[#D2E3D8] font-medium">
+                      Beta
+                    </span>
+                  </sup>
                 </span>
-                <span className="text-[10px] tracking-widest font-mono uppercase px-1.5 py-0.5 rounded bg-[#EBF3EE] text-[#1E3A2F] border border-[#D2E3D8] font-medium">
-                  v1.0
-                </span>
+
+
               </div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-[#79808E] hidden sm:inline">
-                Academic Test Engine
+              <span className="text-[8px] font-mono uppercase tracking-wider text-[#79808E] hidden sm:inline">
+                Intelligent Academic Test System
               </span>
             </div>
           </Link>
