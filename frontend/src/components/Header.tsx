@@ -9,7 +9,10 @@ import {
   SparklesIcon,
   ChevronDownIcon,
   LogOutIcon,
-  UserIcon
+  UserIcon,
+  ShieldCheckIcon,
+  BookOpenIcon,
+  UsersIcon,
 } from "./Icons";
 
 interface HeaderProps {
@@ -143,6 +146,34 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
             >
               Architecture
             </a>
+
+            {isAuthenticated && (
+              <>
+                <Link
+                  to="/tests"
+                  className="text-[13.5px] font-semibold text-[#1E3A2F] bg-[#EBF3EE] border border-[#CDE1D4] px-3.5 py-1.5 rounded-full hover:bg-[#DDF0E3] transition-colors flex items-center gap-1.5"
+                >
+                  <BookOpenIcon size={14} />
+                  <span>Tests</span>
+                </Link>
+                <Link
+                  to="/dashboard"
+                  className="text-[13.5px] font-medium text-[#585E6A] hover:text-[#18191B] px-3.5 py-1.5 rounded-full hover:bg-[#F3F0EA] transition-colors flex items-center gap-1.5"
+                >
+                  <ShieldCheckIcon size={14} />
+                  <span>Dashboard</span>
+                </Link>
+                {(user?.role === "admin" || user?.role === "educator") && (
+                  <Link
+                    to="/admin/students"
+                    className="text-[13.5px] font-medium text-[#585E6A] hover:text-[#18191B] px-3.5 py-1.5 rounded-full hover:bg-[#F3F0EA] transition-colors flex items-center gap-1.5"
+                  >
+                    <UsersIcon size={14} />
+                    <span>Students</span>
+                  </Link>
+                )}
+              </>
+            )}
           </div>
 
           {/* Action Buttons / Auth State */}
@@ -150,7 +181,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
             {isAuthenticated && user ? (
               <div className="flex items-center gap-2">
                 <Link
-                  to="/auth"
+                  to="/dashboard"
+                  title="Open Dashboard"
                   className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F2EFE9] border border-[#DDD7CC] hover:border-[#BFB9AC] text-xs font-medium text-[#18191B] transition-colors"
                 >
                   <UserIcon size={14} className="text-[#1E3A2F]" />
@@ -249,6 +281,29 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
                   <div className="text-xs text-[#575C66] px-2">
                     Signed in as <strong className="text-[#18191B]">{user.name}</strong> ({user.role})
                   </div>
+                  <Link
+                    to="/tests"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-2.5 rounded-full text-sm font-semibold bg-[#1E3A2F] text-[#FAF9F6] text-center"
+                  >
+                    Go to Tests
+                  </Link>
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-2.5 rounded-full text-sm font-medium bg-[#FFFFFF] border border-[#DDD7CC] text-[#18191B] text-center"
+                  >
+                    Results Dashboard
+                  </Link>
+                  {(user.role === "admin" || user.role === "educator") && (
+                    <Link
+                      to="/admin/students"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full py-2.5 rounded-full text-sm font-medium bg-[#EBF3EE] text-[#1E3A2F] border border-[#CDE1D4] text-center"
+                    >
+                      Student Directory
+                    </Link>
+                  )}
                   <button
                     onClick={() => {
                       logout();

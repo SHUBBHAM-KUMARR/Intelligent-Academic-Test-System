@@ -20,11 +20,11 @@ with app.app_context():
         app.logger.warning(f"Could not auto-create database tables on startup: {e}")
 
 if __name__ == "__main__":
-    host = os.getenv("FLASK_RUN_HOST", os.getenv("HOST", "127.0.0.1"))
+    host = os.getenv("FLASK_RUN_HOST", os.getenv("HOST", "0.0.0.0"))
     port = int(os.getenv("FLASK_RUN_PORT", os.getenv("PORT", 5000)))
     debug = os.getenv("FLASK_DEBUG", "True").lower() in ("true", "1", "t")
 
-    print(f"🚀 Starting IATS Backend Server at http://{host}:{port} (debug={debug})")
+    print(f"🚀 Starting IATS Backend Server at http://127.0.0.1:{port} (host={host}, debug={debug})")
     app.run(
         host=host,
         port=port,

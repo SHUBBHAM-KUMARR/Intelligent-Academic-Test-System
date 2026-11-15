@@ -5,6 +5,8 @@ from app.v1.controllers.auth_controller import (
     login,
     profile,
 )
+from app.v1.controllers.test_controller import TestController
+from app.v1.controllers.source_controller import SourceController
 
 __all__ = [
     "AuthController",
@@ -12,5 +14,6 @@ __all__ = [
     "register_admin",
     "login",
     "profile",
+    "TestController",
+    "SourceController",
 ]
-

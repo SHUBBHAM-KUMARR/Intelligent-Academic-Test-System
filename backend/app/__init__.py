@@ -29,9 +29,11 @@ def create_app(config_class=Config):
     ma.init_app(app)
 
     # Register routes
-    from app.v1.routes import home_bp, auth_bp
+    from app.v1.routes import home_bp, auth_bp, test_bp, source_bp
 
     app.register_blueprint(home_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(test_bp)
+    app.register_blueprint(source_bp)
 
     return app

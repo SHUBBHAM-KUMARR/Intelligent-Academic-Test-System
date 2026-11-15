@@ -14,7 +14,8 @@ import {
   BuildingIcon,
   GraduationCapIcon,
   ShieldCheckIcon,
-  LogOutIcon
+  LogOutIcon,
+  PlayIcon,
 } from "../components/Icons";
 
 export const AuthPage: React.FC = () => {
@@ -107,10 +108,20 @@ export const AuthPage: React.FC = () => {
       setIsSubmitting(false);
 
       if (res.success) {
-        setAlert({ type: "success", message: "Login successful! Redirecting..." });
+        const savedUser = localStorage.getItem("iats_user");
+        const parsedUser = savedUser ? JSON.parse(savedUser) : null;
+        const targetRoute =
+          parsedUser?.role === "admin" || parsedUser?.role === "educator"
+            ? "/dashboard"
+            : "/tests";
+
+        setAlert({
+          type: "success",
+          message: `Login successful! Redirecting to ${targetRoute === "/tests" ? "Tests" : "Dashboard"}...`,
+        });
         setTimeout(() => {
-          navigate("/");
-        }, 800);
+          navigate(targetRoute);
+        }, 700);
       } else {
         setAlert({
           type: "error",
@@ -123,13 +134,15 @@ export const AuthPage: React.FC = () => {
       setIsSubmitting(false);
 
       if (res.success) {
+        const targetRoute = role === "admin" ? "/dashboard" : "/tests";
+
         setAlert({
           type: "success",
-          message: "Account created successfully! Welcome to IATS.",
+          message: `Account created successfully! Redirecting to ${targetRoute === "/tests" ? "Tests" : "Dashboard"}...`,
         });
         setTimeout(() => {
-          navigate("/");
-        }, 1000);
+          navigate(targetRoute);
+        }, 800);
       } else {
         setAlert({
           type: "error",
@@ -198,17 +211,31 @@ export const AuthPage: React.FC = () => {
 
             <div className="flex flex-col gap-2.5">
               <Link
-                to="/"
-                className="w-full py-3 rounded-full bg-[#1E3A2F] text-[#FAF9F6] font-semibold text-xs sm:text-sm hover:bg-[#162C23] shadow-sm transition-all"
+                to="/tests"
+                className="w-full py-3 rounded-full bg-[#1E3A2F] text-[#FAF9F6] font-semibold text-xs sm:text-sm hover:bg-[#162C23] shadow-sm transition-all flex items-center justify-center gap-2"
               >
-                Go to Testing Platform
+                <PlayIcon size={13} />
+                <span>Go to Academic Tests</span>
+              </Link>
+              <Link
+                to="/dashboard"
+                className="w-full py-2.5 rounded-full bg-[#FFFFFF] border border-[#DDD7CC] hover:bg-[#F7F5EF] text-[#18191B] font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors"
+              >
+                <ShieldCheckIcon size={14} />
+                <span>Open Results Dashboard</span>
+              </Link>
+              <Link
+                to="/"
+                className="w-full py-2 rounded-full text-xs text-[#575C66] hover:text-[#18191B] text-center transition-colors"
+              >
+                Return to Overview
               </Link>
               <button
                 type="button"
                 onClick={logout}
-                className="w-full py-2.5 rounded-full bg-[#FFFFFF] border border-[#DDD7CC] hover:bg-[#FDF2F2] hover:border-[#E07A7A] hover:text-[#991B1B] text-[#575C66] font-medium text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors"
+                className="w-full py-2 rounded-full bg-transparent hover:bg-[#FDF2F2] hover:text-[#991B1B] text-[#575C66] font-medium text-xs flex items-center justify-center gap-2 transition-colors"
               >
-                <LogOutIcon size={14} />
+                <LogOutIcon size={13} />
                 <span>Sign Out</span>
               </button>
             </div>
