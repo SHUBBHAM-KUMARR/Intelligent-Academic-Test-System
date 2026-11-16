@@ -29,169 +29,169 @@ import {
 } from "../components/Icons";
 
 // Preset verified academic tests for instant exploration if database is fresh
-const PRESET_ACADEMIC_TESTS: TestData[] = [
-  {
-    id: 101,
-    title: "Algorithms: Recurrences & Divide-and-Conquer",
-    description: "Rigorous evaluation of asymptotic runtimes, Master Theorem cases, and recursion trees.",
-    subject: "Computer Science",
-    topic: "Divide-and-Conquer",
-    difficulty: "medium",
-    duration_minutes: 25,
-    passing_percentage: 50.0,
-    total_marks: 3.0,
-    is_adaptive: false,
-    questions: [
-      {
-        id: 1,
-        text: "Given the recurrence relation T(n) = 4T(n/2) + n², what does the Master Theorem determine regarding its asymptotic upper bound?",
-        type: "mcq",
-        bloom_level: "Analysis (Bloom IV)",
-        options: [
-          "Case 1 applies: T(n) = Θ(n)",
-          "Case 2 applies: T(n) = Θ(n² log n)",
-          "Case 3 applies: T(n) = Θ(n³)",
-          "The Master Theorem cannot be applied to polynomial forms",
-        ],
-        correct_index: 1,
-        points: 1.0,
-        explanation: "Here a = 4, b = 2, so n^(log_b a) = n^(log_2 4) = n². Since f(n) = n² = Θ(n^(log_b a)), Case 2 of the Master Theorem applies, yielding T(n) = Θ(n² log n).",
-        source_citation: "CLRS §4.5",
-        difficulty: "medium",
-      },
-      {
-        id: 2,
-        text: "What is the worst-case time complexity of quicksort when partitioning around the minimum or maximum element at every step?",
-        type: "mcq",
-        bloom_level: "Understanding (Bloom II)",
-        options: [
-          "O(n log n)",
-          "O(n²)",
-          "O(n)",
-          "O(log n)",
-        ],
-        correct_index: 1,
-        points: 1.0,
-        explanation: "Unbalanced partitions result in the recurrence T(n) = T(n-1) + Θ(n), producing an arithmetic series summing to Θ(n²).",
-        source_citation: "CLRS §7.2",
-        difficulty: "medium",
-      },
-      {
-        id: 3,
-        text: "Which of the following sorting algorithms is guaranteed to be stable and run in O(n log n) worst-case time in-place without auxiliary space?",
-        type: "mcq",
-        bloom_level: "Evaluation (Bloom V)",
-        options: [
-          "Standard Merge Sort",
-          "Heapsort",
-          "Block Sort (In-place merge sort variants)",
-          "Quicksort",
-        ],
-        correct_index: 2,
-        points: 1.0,
-        explanation: "Standard merge sort requires O(n) auxiliary space. Heapsort is not stable. Block sort variants achieve in-place stability in O(n log n).",
-        source_citation: "Algorithms 4th Ed. §2.3",
-        difficulty: "hard",
-      },
-    ],
-  },
-  {
-    id: 102,
-    title: "Macroeconomics: Monetary Policy & Reserve Mechanics",
-    description: "Assessment on fractional-reserve banking, money multipliers, and central bank open-market operations.",
-    subject: "Economics",
-    topic: "Monetary System",
-    difficulty: "medium",
-    duration_minutes: 20,
-    passing_percentage: 50.0,
-    total_marks: 2.0,
-    is_adaptive: false,
-    questions: [
-      {
-        id: 1,
-        text: "If the central bank increases reserve requirements from 10% to 20%, what is the theoretical effect on the maximum simple money multiplier?",
-        type: "mcq",
-        bloom_level: "Application (Bloom III)",
-        options: [
-          "The multiplier doubles from 5 to 10",
-          "The multiplier decreases by half, falling from 10 to 5",
-          "The multiplier stays constant because currency drain is unaffected",
-          "The multiplier falls to 0 as private banks cease lending",
-        ],
-        correct_index: 1,
-        points: 1.0,
-        explanation: "The simple money multiplier is 1 / R. At 10%, 1 / 0.10 = 10. At 20%, 1 / 0.20 = 5. The lending expansion potential contracts by 50%.",
-        source_citation: "Mankiw Macroeconomics §14.2",
-        difficulty: "medium",
-      },
-      {
-        id: 2,
-        text: "When a central bank conducts an open-market purchase of government bonds, what is the immediate effect on commercial bank reserves and the money supply?",
-        type: "mcq",
-        bloom_level: "Analysis (Bloom IV)",
-        options: [
-          "Bank reserves decrease and the money supply contracts",
-          "Bank reserves increase and the money supply expands",
-          "Bank reserves remain unchanged while interest rates spike",
-          "The velocity of money falls to zero",
-        ],
-        correct_index: 1,
-        points: 1.0,
-        explanation: "Open-market purchases inject liquidity into commercial banking reserves, shifting the reserve supply curve rightward and exerting downward pressure on overnight interbank rates.",
-        source_citation: "Mankiw Macroeconomics §14.3",
-        difficulty: "medium",
-      },
-    ],
-  },
-  {
-    id: 103,
-    title: "Cellular Biology: Bioenergetics & Respiration",
-    description: "Exploration of chemiosmosis, proton gradients, and oxidative phosphorylation uncoupling.",
-    subject: "Life Sciences",
-    topic: "Oxidative Phosphorylation",
-    difficulty: "hard",
-    duration_minutes: 30,
-    passing_percentage: 50.0,
-    total_marks: 2.0,
-    is_adaptive: true,
-    questions: [
-      {
-        id: 1,
-        text: "If an uncoupling protein (such as UCP1/thermogenin) makes the inner mitochondrial membrane permeable to protons, what is the biochemical consequence?",
-        type: "mcq",
-        bloom_level: "Evaluation (Bloom V)",
-        options: [
-          "ATP synthesis increases due to elevated proton transit",
-          "Protons dissipate without driving ATP synthase, generating thermal energy instead of ATP",
-          "The electron transport chain halts completely and oxygen consumption drops to zero",
-          "Glycolysis is inhibited by excessive accumulation of cytosolic NADH",
-        ],
-        correct_index: 1,
-        points: 1.0,
-        explanation: "Uncoupling agents dissipate the electrochemical proton-motive force across the cristae membrane, decoupling electron transit from phosphorylation and generating heat.",
-        source_citation: "Campbell Biology 12th Ed. §9.4",
-        difficulty: "hard",
-      },
-      {
-        id: 2,
-        text: "Which terminal electron acceptor receives electrons from Complex IV in eukaryotic cellular respiration?",
-        type: "mcq",
-        bloom_level: "Remembering (Bloom I)",
-        options: [
-          "Molecular Oxygen (O₂)",
-          "NAD+",
-          "Pyruvate",
-          "Cytochrome c",
-        ],
-        correct_index: 0,
-        points: 1.0,
-        explanation: "Cytochrome c oxidase (Complex IV) transfers electrons to molecular oxygen, reducing it to form water molecules.",
-        source_citation: "Campbell Biology 12th Ed. §9.4",
-        difficulty: "easy",
-      },
-    ],
-  },
-];
+// const PRESET_ACADEMIC_TESTS: TestData[] = [
+//   {
+//     id: 101,
+//     title: "Algorithms: Recurrences & Divide-and-Conquer",
+//     description: "Rigorous evaluation of asymptotic runtimes, Master Theorem cases, and recursion trees.",
+//     subject: "Computer Science",
+//     topic: "Divide-and-Conquer",
+//     difficulty: "medium",
+//     duration_minutes: 25,
+//     passing_percentage: 50.0,
+//     total_marks: 3.0,
+//     is_adaptive: false,
+//     questions: [
+//       {
+//         id: 1,
+//         text: "Given the recurrence relation T(n) = 4T(n/2) + n², what does the Master Theorem determine regarding its asymptotic upper bound?",
+//         type: "mcq",
+//         bloom_level: "Analysis (Bloom IV)",
+//         options: [
+//           "Case 1 applies: T(n) = Θ(n)",
+//           "Case 2 applies: T(n) = Θ(n² log n)",
+//           "Case 3 applies: T(n) = Θ(n³)",
+//           "The Master Theorem cannot be applied to polynomial forms",
+//         ],
+//         correct_index: 1,
+//         points: 1.0,
+//         explanation: "Here a = 4, b = 2, so n^(log_b a) = n^(log_2 4) = n². Since f(n) = n² = Θ(n^(log_b a)), Case 2 of the Master Theorem applies, yielding T(n) = Θ(n² log n).",
+//         source_citation: "CLRS §4.5",
+//         difficulty: "medium",
+//       },
+//       {
+//         id: 2,
+//         text: "What is the worst-case time complexity of quicksort when partitioning around the minimum or maximum element at every step?",
+//         type: "mcq",
+//         bloom_level: "Understanding (Bloom II)",
+//         options: [
+//           "O(n log n)",
+//           "O(n²)",
+//           "O(n)",
+//           "O(log n)",
+//         ],
+//         correct_index: 1,
+//         points: 1.0,
+//         explanation: "Unbalanced partitions result in the recurrence T(n) = T(n-1) + Θ(n), producing an arithmetic series summing to Θ(n²).",
+//         source_citation: "CLRS §7.2",
+//         difficulty: "medium",
+//       },
+//       {
+//         id: 3,
+//         text: "Which of the following sorting algorithms is guaranteed to be stable and run in O(n log n) worst-case time in-place without auxiliary space?",
+//         type: "mcq",
+//         bloom_level: "Evaluation (Bloom V)",
+//         options: [
+//           "Standard Merge Sort",
+//           "Heapsort",
+//           "Block Sort (In-place merge sort variants)",
+//           "Quicksort",
+//         ],
+//         correct_index: 2,
+//         points: 1.0,
+//         explanation: "Standard merge sort requires O(n) auxiliary space. Heapsort is not stable. Block sort variants achieve in-place stability in O(n log n).",
+//         source_citation: "Algorithms 4th Ed. §2.3",
+//         difficulty: "hard",
+//       },
+//     ],
+//   },
+//   {
+//     id: 102,
+//     title: "Macroeconomics: Monetary Policy & Reserve Mechanics",
+//     description: "Assessment on fractional-reserve banking, money multipliers, and central bank open-market operations.",
+//     subject: "Economics",
+//     topic: "Monetary System",
+//     difficulty: "medium",
+//     duration_minutes: 20,
+//     passing_percentage: 50.0,
+//     total_marks: 2.0,
+//     is_adaptive: false,
+//     questions: [
+//       {
+//         id: 1,
+//         text: "If the central bank increases reserve requirements from 10% to 20%, what is the theoretical effect on the maximum simple money multiplier?",
+//         type: "mcq",
+//         bloom_level: "Application (Bloom III)",
+//         options: [
+//           "The multiplier doubles from 5 to 10",
+//           "The multiplier decreases by half, falling from 10 to 5",
+//           "The multiplier stays constant because currency drain is unaffected",
+//           "The multiplier falls to 0 as private banks cease lending",
+//         ],
+//         correct_index: 1,
+//         points: 1.0,
+//         explanation: "The simple money multiplier is 1 / R. At 10%, 1 / 0.10 = 10. At 20%, 1 / 0.20 = 5. The lending expansion potential contracts by 50%.",
+//         source_citation: "Mankiw Macroeconomics §14.2",
+//         difficulty: "medium",
+//       },
+//       {
+//         id: 2,
+//         text: "When a central bank conducts an open-market purchase of government bonds, what is the immediate effect on commercial bank reserves and the money supply?",
+//         type: "mcq",
+//         bloom_level: "Analysis (Bloom IV)",
+//         options: [
+//           "Bank reserves decrease and the money supply contracts",
+//           "Bank reserves increase and the money supply expands",
+//           "Bank reserves remain unchanged while interest rates spike",
+//           "The velocity of money falls to zero",
+//         ],
+//         correct_index: 1,
+//         points: 1.0,
+//         explanation: "Open-market purchases inject liquidity into commercial banking reserves, shifting the reserve supply curve rightward and exerting downward pressure on overnight interbank rates.",
+//         source_citation: "Mankiw Macroeconomics §14.3",
+//         difficulty: "medium",
+//       },
+//     ],
+//   },
+//   {
+//     id: 103,
+//     title: "Cellular Biology: Bioenergetics & Respiration",
+//     description: "Exploration of chemiosmosis, proton gradients, and oxidative phosphorylation uncoupling.",
+//     subject: "Life Sciences",
+//     topic: "Oxidative Phosphorylation",
+//     difficulty: "hard",
+//     duration_minutes: 30,
+//     passing_percentage: 50.0,
+//     total_marks: 2.0,
+//     is_adaptive: true,
+//     questions: [
+//       {
+//         id: 1,
+//         text: "If an uncoupling protein (such as UCP1/thermogenin) makes the inner mitochondrial membrane permeable to protons, what is the biochemical consequence?",
+//         type: "mcq",
+//         bloom_level: "Evaluation (Bloom V)",
+//         options: [
+//           "ATP synthesis increases due to elevated proton transit",
+//           "Protons dissipate without driving ATP synthase, generating thermal energy instead of ATP",
+//           "The electron transport chain halts completely and oxygen consumption drops to zero",
+//           "Glycolysis is inhibited by excessive accumulation of cytosolic NADH",
+//         ],
+//         correct_index: 1,
+//         points: 1.0,
+//         explanation: "Uncoupling agents dissipate the electrochemical proton-motive force across the cristae membrane, decoupling electron transit from phosphorylation and generating heat.",
+//         source_citation: "Campbell Biology 12th Ed. §9.4",
+//         difficulty: "hard",
+//       },
+//       {
+//         id: 2,
+//         text: "Which terminal electron acceptor receives electrons from Complex IV in eukaryotic cellular respiration?",
+//         type: "mcq",
+//         bloom_level: "Remembering (Bloom I)",
+//         options: [
+//           "Molecular Oxygen (O₂)",
+//           "NAD+",
+//           "Pyruvate",
+//           "Cytochrome c",
+//         ],
+//         correct_index: 0,
+//         points: 1.0,
+//         explanation: "Cytochrome c oxidase (Complex IV) transfers electrons to molecular oxygen, reducing it to form water molecules.",
+//         source_citation: "Campbell Biology 12th Ed. §9.4",
+//         difficulty: "easy",
+//       },
+//     ],
+//   },
+// ];
 
 export const TestsPage: React.FC = () => {
   const { user, isAuthenticated, isLoading: authLoading, logout } = useAuth();
@@ -252,14 +252,14 @@ export const TestsPage: React.FC = () => {
       if (res.tests && res.tests.length > 0) {
         // Merge backend tests with preset tests, avoiding ID collisions
         const backendIds = new Set(res.tests.map((t) => t.id));
-        const combined = [...res.tests, ...PRESET_ACADEMIC_TESTS.filter((p) => !backendIds.has(p.id))];
-        setPublishedTests(combined);
+        // const combined = [...res.tests, ...PRESET_ACADEMIC_TESTS.filter((p) => !backendIds.has(p.id))];
+        // setPublishedTests(combined);
       } else {
-        setPublishedTests(PRESET_ACADEMIC_TESTS);
+        // setPublishedTests(PRESET_ACADEMIC_TESTS);
       }
     } catch {
       // Offline fallback: Use rich preset tests
-      setPublishedTests(PRESET_ACADEMIC_TESTS);
+      // setPublishedTests(PRESET_ACADEMIC_TESTS);
     } finally {
       setTestsLoading(false);
     }
@@ -808,11 +808,11 @@ export const TestsPage: React.FC = () => {
                         onChange={(e) => setSynthSubject(e.target.value)}
                         className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F]"
                       >
-                        <option value="Computer Science">Computer Science</option>
-                        <option value="Economics">Economics</option>
-                        <option value="Life Sciences">Life Sciences</option>
-                        <option value="Mathematics">Mathematics</option>
-                        <option value="Physics">Physics</option>
+                        <option value="Computational Mathematics">Computational Mathematics</option>
+                        <option value="Computer system and organization">Computer system and organization</option>
+                        <option value="Web Technologies">Web Technologies</option>
+                        <option value="C programming">C programming</option>
+                        <option value="Fundamentals fo AI">Fundamentals fo AI</option>
                       </select>
                     </div>
 
