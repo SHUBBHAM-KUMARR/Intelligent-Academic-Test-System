@@ -30,171 +30,6 @@ import {
   XIcon,
 } from "../components/Icons";
 
-// Preset verified academic tests for instant exploration if database is fresh
-const PRESET_ACADEMIC_TESTS: TestData[] = [
-  {
-    id: 101,
-    title: "Algorithms: Recurrences & Divide-and-Conquer",
-    description: "Rigorous evaluation of asymptotic runtimes, Master Theorem cases, and recursion trees.",
-    subject: "Computer Science",
-    topic: "Divide-and-Conquer",
-    difficulty: "medium",
-    duration_minutes: 25,
-    passing_percentage: 50.0,
-    total_marks: 3.0,
-    is_adaptive: false,
-    questions: [
-      {
-        id: 1,
-        text: "Given the recurrence relation T(n) = 4T(n/2) + n², what does the Master Theorem determine regarding its asymptotic upper bound?",
-        type: "mcq",
-        bloom_level: "Analysis (Bloom IV)",
-        options: [
-          "Case 1 applies: T(n) = Θ(n)",
-          "Case 2 applies: T(n) = Θ(n² log n)",
-          "Case 3 applies: T(n) = Θ(n³)",
-          "The Master Theorem cannot be applied to polynomial forms",
-        ],
-        correct_index: 1,
-        points: 1.0,
-        explanation: "Here a = 4, b = 2, so n^(log_b a) = n^(log_2 4) = n². Since f(n) = n² = Θ(n^(log_b a)), Case 2 of the Master Theorem applies, yielding T(n) = Θ(n² log n).",
-        source_citation: "CLRS §4.5",
-        difficulty: "medium",
-      },
-      {
-        id: 2,
-        text: "What is the worst-case time complexity of quicksort when partitioning around the minimum or maximum element at every step?",
-        type: "mcq",
-        bloom_level: "Understanding (Bloom II)",
-        options: [
-          "O(n log n)",
-          "O(n²)",
-          "O(n)",
-          "O(log n)",
-        ],
-        correct_index: 1,
-        points: 1.0,
-        explanation: "Unbalanced partitions result in the recurrence T(n) = T(n-1) + Θ(n), producing an arithmetic series summing to Θ(n²).",
-        source_citation: "CLRS §7.2",
-        difficulty: "medium",
-      },
-      {
-        id: 3,
-        text: "Which of the following sorting algorithms is guaranteed to be stable and run in O(n log n) worst-case time in-place without auxiliary space?",
-        type: "mcq",
-        bloom_level: "Evaluation (Bloom V)",
-        options: [
-          "Standard Merge Sort",
-          "Heapsort",
-          "Block Sort (In-place merge sort variants)",
-          "Quicksort",
-        ],
-        correct_index: 2,
-        points: 1.0,
-        explanation: "Standard merge sort requires O(n) auxiliary space. Heapsort is not stable. Block sort variants achieve in-place stability in O(n log n).",
-        source_citation: "Algorithms 4th Ed. §2.3",
-        difficulty: "hard",
-      },
-    ],
-  },
-  {
-    id: 102,
-    title: "Macroeconomics: Monetary Policy & Reserve Mechanics",
-    description: "Assessment on fractional-reserve banking, money multipliers, and central bank open-market operations.",
-    subject: "Economics",
-    topic: "Monetary System",
-    difficulty: "medium",
-    duration_minutes: 20,
-    passing_percentage: 50.0,
-    total_marks: 2.0,
-    is_adaptive: false,
-    questions: [
-      {
-        id: 1,
-        text: "If the central bank increases reserve requirements from 10% to 20%, what is the theoretical effect on the maximum simple money multiplier?",
-        type: "mcq",
-        bloom_level: "Application (Bloom III)",
-        options: [
-          "The multiplier doubles from 5 to 10",
-          "The multiplier decreases by half, falling from 10 to 5",
-          "The multiplier stays constant because currency drain is unaffected",
-          "The multiplier falls to 0 as private banks cease lending",
-        ],
-        correct_index: 1,
-        points: 1.0,
-        explanation: "The simple money multiplier is 1 / R. At 10%, 1 / 0.10 = 10. At 20%, 1 / 0.20 = 5. The lending expansion potential contracts by 50%.",
-        source_citation: "Mankiw Macroeconomics §14.2",
-        difficulty: "medium",
-      },
-      {
-        id: 2,
-        text: "When a central bank conducts an open-market purchase of government bonds, what is the immediate effect on commercial bank reserves and the money supply?",
-        type: "mcq",
-        bloom_level: "Analysis (Bloom IV)",
-        options: [
-          "Bank reserves decrease and the money supply contracts",
-          "Bank reserves increase and the money supply expands",
-          "Bank reserves remain unchanged while interest rates spike",
-          "The velocity of money falls to zero",
-        ],
-        correct_index: 1,
-        points: 1.0,
-        explanation: "Open-market purchases inject liquidity into commercial banking reserves, shifting the reserve supply curve rightward and exerting downward pressure on overnight interbank rates.",
-        source_citation: "Mankiw Macroeconomics §14.3",
-        difficulty: "medium",
-      },
-    ],
-  },
-  {
-    id: 103,
-    title: "Cellular Biology: Bioenergetics & Respiration",
-    description: "Exploration of chemiosmosis, proton gradients, and oxidative phosphorylation uncoupling.",
-    subject: "Life Sciences",
-    topic: "Oxidative Phosphorylation",
-    difficulty: "hard",
-    duration_minutes: 30,
-    passing_percentage: 50.0,
-    total_marks: 2.0,
-    is_adaptive: true,
-    questions: [
-      {
-        id: 1,
-        text: "If an uncoupling protein (such as UCP1/thermogenin) makes the inner mitochondrial membrane permeable to protons, what is the biochemical consequence?",
-        type: "mcq",
-        bloom_level: "Evaluation (Bloom V)",
-        options: [
-          "ATP synthesis increases due to elevated proton transit",
-          "Protons dissipate without driving ATP synthase, generating thermal energy instead of ATP",
-          "The electron transport chain halts completely and oxygen consumption drops to zero",
-          "Glycolysis is inhibited by excessive accumulation of cytosolic NADH",
-        ],
-        correct_index: 1,
-        points: 1.0,
-        explanation: "Uncoupling agents dissipate the electrochemical proton-motive force across the cristae membrane, decoupling electron transit from phosphorylation and generating heat.",
-        source_citation: "Campbell Biology 12th Ed. §9.4",
-        difficulty: "hard",
-      },
-      {
-        id: 2,
-        text: "Which terminal electron acceptor receives electrons from Complex IV in eukaryotic cellular respiration?",
-        type: "mcq",
-        bloom_level: "Remembering (Bloom I)",
-        options: [
-          "Molecular Oxygen (O₂)",
-          "NAD+",
-          "Pyruvate",
-          "Cytochrome c",
-        ],
-        correct_index: 0,
-        points: 1.0,
-        explanation: "Cytochrome c oxidase (Complex IV) transfers electrons to molecular oxygen, reducing it to form water molecules.",
-        source_citation: "Campbell Biology 12th Ed. §9.4",
-        difficulty: "easy",
-      },
-    ],
-  },
-];
-
 export const TestsPage: React.FC = () => {
   const { user, isAuthenticated, isLoading: authLoading, logout } = useAuth();
   const navigate = useNavigate();
@@ -257,17 +92,10 @@ export const TestsPage: React.FC = () => {
     setTestsLoading(true);
     try {
       const res = await api.listTests();
-      if (res.tests && res.tests.length > 0) {
-        // Merge backend tests with preset tests, avoiding ID collisions
-        const backendIds = new Set(res.tests.map((t) => t.id));
-        const combined = [...res.tests, ...PRESET_ACADEMIC_TESTS.filter((p) => !backendIds.has(p.id))];
-        setPublishedTests(combined);
-      } else {
-        setPublishedTests(PRESET_ACADEMIC_TESTS);
-      }
-    } catch {
-      // Offline fallback: Use rich preset tests
-      setPublishedTests(PRESET_ACADEMIC_TESTS);
+      setPublishedTests(res.tests || []);
+    } catch (err: unknown) {
+      console.error("Failed to load tests from backend:", err);
+      setPublishedTests([]);
     } finally {
       setTestsLoading(false);
     }
@@ -333,47 +161,10 @@ export const TestsPage: React.FC = () => {
       setSubmissionResult(res.result);
       setViewMode("review-results");
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch {
-      // Local evaluation fallback if backend is offline
-      let totalScore = 0;
-      let calibration = 50.0;
-      const evaluations = activeTest.questions.map((q, idx) => {
-        const studentChoice = selectedAnswers[idx];
-        const isCorrect = studentChoice !== undefined && studentChoice === q.correct_index;
-        const pts = isCorrect ? (q.points || 1.0) : 0.0;
-        totalScore += pts;
-        calibration = isCorrect ? Math.min(100, calibration + 8.5) : Math.max(10, calibration - 4.2);
-
-        return {
-          question_id: q.id ?? idx + 1,
-          is_correct: isCorrect,
-          points_awarded: pts,
-          max_points: q.points || 1.0,
-          selected_option: studentChoice !== undefined ? studentChoice : null,
-          correct_index: q.correct_index,
-          explanation: q.explanation || "Correct answer based on curriculum rubric.",
-          source_citation: q.source_citation || "Institutional Curriculum §1",
-          bloom_level: q.bloom_level,
-          calibration_delta: isCorrect ? 8.5 : -4.2,
-        };
-      });
-
-      const maxScore = activeTest.total_marks || activeTest.questions.length;
-      const percentage = Math.round((totalScore / maxScore) * 100);
-
-      setSubmissionResult({
-        submission_id: Date.now(),
-        test_id: activeTest.id,
-        score: totalScore,
-        total_marks: maxScore,
-        percentage,
-        calibration_score: Math.round(calibration * 10) / 10,
-        passed: percentage >= (activeTest.passing_percentage || 40),
-        evaluations,
-        submitted_at: new Date().toISOString(),
-      });
-      setViewMode("review-results");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err: unknown) {
+      console.error("Submission failed:", err);
+      const errMsg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      alert(errMsg || "Submission failed. Please verify your connection to the assessment server.");
     } finally {
       setIsSubmittingTest(false);
     }
@@ -1329,17 +1120,10 @@ export const TestsPage: React.FC = () => {
                   </div>
 
                   {/* Question Prompt */}
-                  <div className="space-y-3">
+                  <div>
                     <h3 className="text-lg sm:text-xl font-normal font-['Newsreader',serif] text-[#18191B] leading-relaxed">
                       {currentQ.text}
                     </h3>
-
-                    {currentQ.source_citation && (
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#F7F5EF] text-[11px] font-mono text-[#575C66]">
-                        <BookOpenIcon size={12} className="text-[#1E3A2F]" />
-                        <span>Source Grounding: {currentQ.source_citation}</span>
-                      </div>
-                    )}
                   </div>
 
                   {/* Options List */}
@@ -1615,6 +1399,17 @@ export const TestsPage: React.FC = () => {
                           <strong className="text-[#18191B] font-semibold">Rubric Rationale: </strong>
                           {q.explanation}
                         </p>
+                      )}
+
+                      {/* Source Grounding Citation */}
+                      {(ev?.source_citation || q.source_citation) && (
+                        <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#FFFFFF] border border-[#DDD7CC] text-[11px] font-mono text-[#575C66]">
+                          <BookOpenIcon size={13} className="text-[#1E3A2F] shrink-0" />
+                          <span>
+                            <strong className="text-[#1E3A2F] font-semibold">Source Grounding: </strong>
+                            {ev?.source_citation || q.source_citation}
+                          </span>
+                        </div>
                       )}
 
                       {/* AI Tutor Remediation Section */}

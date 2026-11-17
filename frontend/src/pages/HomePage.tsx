@@ -873,7 +873,7 @@ export const HomePage: React.FC = () => {
                               </span>
                             </div>
 
-                            {activeQ.source_citation && (
+                            {submissionResult && activeQ.source_citation && (
                               <span className="text-[11px] font-mono text-[#1E3A2F] flex items-center gap-1">
                                 <ShieldCheckIcon size={13} /> {activeQ.source_citation}
                               </span>
