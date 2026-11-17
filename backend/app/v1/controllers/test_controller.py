@@ -17,6 +17,7 @@ from app.schemas.test_schema import (
 )
 from app.services.agent_service import get_academic_agent
 from app.services.test_service import get_level_handler, AdaptiveTest
+from app.services.pdf_service import extract_text_from_pdf, PDFExtractionError
 
 generate_schema = TestGenerateRequestSchema()
 test_schema = TestSchema()
@@ -54,11 +55,35 @@ class TestController:
     def generate():
         """
         Synthesize a new source-grounded test using the Academic Agent.
+        Supports both JSON request body and multipart/form-data with a PDF file upload.
         POST /api/v1/test/generate
         """
-        data = request.get_json(silent=True)
+        uploaded_file = request.files.get("file") or request.files.get("pdf")
+        if uploaded_file and uploaded_file.filename:
+            filename = uploaded_file.filename.lower()
+            if not filename.endswith(".pdf"):
+                return jsonify({"error": "Only PDF documents (.pdf) are supported for file upload."}), 400
+
+            try:
+                extracted = extract_text_from_pdf(uploaded_file.stream)
+            except PDFExtractionError as e:
+                return jsonify({"error": str(e)}), 400
+            except Exception as e:
+                return jsonify({"error": f"Failed to parse uploaded PDF: {str(e)}"}), 500
+
+            data = request.form.to_dict()
+            data["source_material"] = extracted["text"]
+            if not data.get("topic"):
+                data["topic"] = uploaded_file.filename.rsplit(".", 1)[0].replace("_", " ").title()
+            if not data.get("subject"):
+                data["subject"] = "General Academic"
+            if not data.get("title"):
+                data["title"] = f"{data['topic']} Assessment"
+        else:
+            data = request.get_json(silent=True) or request.form.to_dict()
+
         if not data:
-            return jsonify({"error": "Request body must be a valid JSON object"}), 400
+            return jsonify({"error": "Request body must be a valid JSON object or form data"}), 400
 
         try:
             validated = generate_schema.load(data)

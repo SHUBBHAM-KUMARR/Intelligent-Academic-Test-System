@@ -26,6 +26,8 @@ import {
   UploadCloudIcon,
   PlayIcon,
   CheckIcon,
+  FileTextIcon,
+  XIcon,
 } from "../components/Icons";
 
 // Preset verified academic tests for instant exploration if database is fresh
@@ -227,10 +229,16 @@ export const TestsPage: React.FC = () => {
   const [synthNumQuestions, setSynthNumQuestions] = useState<number>(5);
   const [synthDuration, setSynthDuration] = useState<number>(25);
   const [synthSourceMaterial, setSynthSourceMaterial] = useState<string>("");
+  const [synthPdfFile, setSynthPdfFile] = useState<File | null>(null);
+  const [synthPdfStats, setSynthPdfStats] = useState<{ total_pages: number; total_words: number; title: string } | null>(null);
+  const [isReadingPdf, setIsReadingPdf] = useState<boolean>(false);
   const [isSynthesizing, setIsSynthesizing] = useState<boolean>(false);
   const [synthError, setSynthError] = useState<string | null>(null);
 
   // Grounding Ingestion State
+  const [groundingMode, setGroundingMode] = useState<"pdf" | "text">("pdf");
+  const [groundingPdfFile, setGroundingPdfFile] = useState<File | null>(null);
+  const [isReadingGroundingPdf, setIsReadingGroundingPdf] = useState<boolean>(false);
   const [groundingTitle, setGroundingTitle] = useState<string>("");
   const [groundingSubject, setGroundingSubject] = useState<string>("Life Sciences");
   const [groundingText, setGroundingText] = useState<string>("");
@@ -384,6 +392,66 @@ export const TestsPage: React.FC = () => {
       }));
     } finally {
       setExplainingQuestionId(null);
+    }
+  };
+
+  // Handle PDF upload in AI Synthesizer
+  const handlePdfUploadInSynthesizer = async (file: File) => {
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+      setSynthError("Please upload a valid PDF (.pdf) document.");
+      return;
+    }
+    setSynthPdfFile(file);
+    setIsReadingPdf(true);
+    setSynthError(null);
+
+    try {
+      const res = await api.uploadPdf(file, { subject: synthSubject });
+      if (res.text) {
+        setSynthSourceMaterial(res.text);
+        setSynthPdfStats({
+          total_pages: res.total_pages || 1,
+          total_words: res.total_words,
+          title: res.document_title,
+        });
+        if (!synthTopic || synthTopic === "Dynamic Programming") {
+          setSynthTopic(res.document_title);
+        }
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to extract readable content from PDF";
+      setSynthError(msg);
+      setSynthPdfFile(null);
+    } finally {
+      setIsReadingPdf(false);
+    }
+  };
+
+  const handleRemoveSynthPdf = () => {
+    setSynthPdfFile(null);
+    setSynthPdfStats(null);
+    setSynthSourceMaterial("");
+  };
+
+  // Handle PDF upload in Grounding Ingestion
+  const handlePdfUploadInGrounding = async (file: File) => {
+    if (!file.name.toLowerCase().endsWith(".pdf")) return;
+    setGroundingPdfFile(file);
+    setIsReadingGroundingPdf(true);
+    try {
+      const res = await api.uploadPdf(file, {
+        title: groundingTitle.trim() || undefined,
+        subject: groundingSubject,
+      });
+      setIngestionResult(res);
+      setGroundingText(res.text || "");
+      if (!groundingTitle) {
+        setGroundingTitle(res.document_title);
+      }
+    } catch (err: unknown) {
+      console.error("PDF grounding error:", err);
+    } finally {
+      setIsReadingGroundingPdf(false);
     }
   };
 
@@ -879,17 +947,92 @@ export const TestsPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-[#18191B] mb-1 font-mono uppercase tracking-wider">
-                      Grounding Textbook Snippet or Syllabus (Optional)
-                    </label>
-                    <textarea
-                      rows={4}
-                      placeholder="Paste specific textbook excerpts, definitions, or equations to strictly ground the generated questions..."
-                      value={synthSourceMaterial}
-                      onChange={(e) => setSynthSourceMaterial(e.target.value)}
-                      className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F] resize-y"
-                    />
+                  {/* Grounding Source Section: PDF Upload or Raw Text */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-semibold text-[#18191B] font-mono uppercase tracking-wider">
+                        Grounding Source Material
+                      </label>
+                      <span className="text-[11px] font-mono text-[#1E3A2F]">
+                        {synthPdfFile ? "✓ PDF Grounding Active" : "PDF or Text Grounding"}
+                      </span>
+                    </div>
+
+                    {/* PDF Upload Dropzone / Active Card */}
+                    {isReadingPdf ? (
+                      <div className="p-6 rounded-2xl bg-[#F7F5EF] border border-[#E4DFD5] text-center">
+                        <div className="w-8 h-8 rounded-full bg-[#EBF3EE] border border-[#CDE1D4] text-[#1E3A2F] flex items-center justify-center mx-auto mb-2 animate-spin">
+                          <RefreshIcon size={16} />
+                        </div>
+                        <p className="text-xs font-semibold text-[#18191B]">Reading and parsing PDF content...</p>
+                        <p className="text-[11px] text-[#666C7A] mt-0.5">Extracting academic text and structure</p>
+                      </div>
+                    ) : synthPdfFile && synthPdfStats ? (
+                      <div className="p-4 rounded-2xl bg-[#EBF3EE] border border-[#CDE1D4] flex items-center justify-between shadow-sm">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-[#FFFFFF] border border-[#CDE1D4] text-[#1E3A2F] flex items-center justify-center shrink-0">
+                            <FileTextIcon size={18} />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-semibold text-[#18191B] max-w-xs truncate">
+                                {synthPdfFile.name}
+                              </span>
+                              <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-[#FFFFFF] text-[#1E3A2F] border border-[#CDE1D4] font-semibold">
+                                {synthPdfStats.total_pages} {synthPdfStats.total_pages === 1 ? "Page" : "Pages"}
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-[#575C66] mt-0.5 font-mono">
+                              {synthPdfStats.total_words} words extracted • AI will strictly ground questions in this PDF
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleRemoveSynthPdf}
+                          title="Remove PDF"
+                          className="p-1.5 rounded-full hover:bg-[#FDF2F2] hover:text-[#991B1B] text-[#575C66] transition-colors"
+                        >
+                          <XIcon size={16} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <label className="border-2 border-dashed border-[#DDD7CC] hover:border-[#1E3A2F] bg-[#F7F5EF] hover:bg-[#EBF3EE]/60 rounded-2xl p-5 text-center cursor-pointer transition-colors block group">
+                          <input
+                            type="file"
+                            accept=".pdf,application/pdf"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handlePdfUploadInSynthesizer(file);
+                            }}
+                          />
+                          <div className="w-10 h-10 rounded-full bg-[#EBF3EE] border border-[#CDE1D4] text-[#1E3A2F] flex items-center justify-center mx-auto mb-2 transition-transform group-hover:scale-105">
+                            <UploadCloudIcon size={18} />
+                          </div>
+                          <span className="text-xs font-semibold text-[#18191B] block">
+                            Upload PDF Document to Ground Questions
+                          </span>
+                          <span className="text-[11px] text-[#666C7A] mt-0.5 block">
+                            Textbook chapters, syllabus notes, research papers (.pdf)
+                          </span>
+                        </label>
+
+                        <div>
+                          <span className="text-[11px] font-mono text-[#666C7A] block mb-1">
+                            Or paste syllabus / reference excerpt manually:
+                          </span>
+                          <textarea
+                            rows={3}
+                            placeholder="Paste textbook excerpts, definitions, or proofs to ground the generated questions..."
+                            value={synthSourceMaterial}
+                            onChange={(e) => setSynthSourceMaterial(e.target.value)}
+                            className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F] resize-y"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <button
@@ -927,73 +1070,167 @@ export const TestsPage: React.FC = () => {
                   <p className="text-xs text-[#575C66] mt-1">
                     Upload course syllabi, lecture transcripts, or textbook chapters to index them into structured grounding chunks.
                   </p>
+
+                  {/* Grounding Mode Toggle */}
+                  <div className="flex items-center gap-2 mt-4 p-1 rounded-full bg-[#F3EFE7] border border-[#E4DFD5] w-fit">
+                    <button
+                      type="button"
+                      onClick={() => setGroundingMode("pdf")}
+                      className={`px-3.5 py-1 rounded-full text-xs font-semibold transition-all ${
+                        groundingMode === "pdf"
+                          ? "bg-[#FFFFFF] text-[#18191B] shadow-sm border border-[#DDD7CC]"
+                          : "text-[#575C66] hover:text-[#18191B]"
+                      }`}
+                    >
+                      Upload PDF Document
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setGroundingMode("text")}
+                      className={`px-3.5 py-1 rounded-full text-xs font-semibold transition-all ${
+                        groundingMode === "text"
+                          ? "bg-[#FFFFFF] text-[#18191B] shadow-sm border border-[#DDD7CC]"
+                          : "text-[#575C66] hover:text-[#18191B]"
+                      }`}
+                    >
+                      Paste Manual Text
+                    </button>
+                  </div>
                 </div>
 
-                <form onSubmit={handleIngestSource} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {groundingMode === "pdf" ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-[#18191B] mb-1 font-mono uppercase tracking-wider">
+                          Document Title (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Auto-detected from PDF or custom title"
+                          value={groundingTitle}
+                          onChange={(e) => setGroundingTitle(e.target.value)}
+                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-[#18191B] mb-1 font-mono uppercase tracking-wider">
+                          Discipline
+                        </label>
+                        <select
+                          value={groundingSubject}
+                          onChange={(e) => setGroundingSubject(e.target.value)}
+                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F]"
+                        >
+                          <option value="Computer Science">Computer Science</option>
+                          <option value="Economics">Economics</option>
+                          <option value="Life Sciences">Life Sciences</option>
+                          <option value="Physics">Physics</option>
+                          <option value="Mathematics">Mathematics</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {isReadingGroundingPdf ? (
+                      <div className="p-8 rounded-2xl bg-[#F7F5EF] border border-[#E4DFD5] text-center">
+                        <div className="w-9 h-9 rounded-full bg-[#EBF3EE] border border-[#CDE1D4] text-[#1E3A2F] flex items-center justify-center mx-auto mb-2 animate-spin">
+                          <RefreshIcon size={18} />
+                        </div>
+                        <p className="text-xs font-semibold text-[#18191B]">Indexing PDF Pages & Text...</p>
+                        <p className="text-[11px] text-[#666C7A] mt-0.5 font-mono">Parsing semantic chunks for deterministic grounding</p>
+                      </div>
+                    ) : (
+                      <label className="border-2 border-dashed border-[#DDD7CC] hover:border-[#1E3A2F] bg-[#F7F5EF] hover:bg-[#EBF3EE]/60 rounded-2xl p-8 text-center cursor-pointer transition-colors block group">
+                        <input
+                          type="file"
+                          accept=".pdf,application/pdf"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handlePdfUploadInGrounding(file);
+                          }}
+                        />
+                        <div className="w-12 h-12 rounded-full bg-[#EBF3EE] border border-[#CDE1D4] text-[#1E3A2F] flex items-center justify-center mx-auto mb-3 transition-transform group-hover:scale-105">
+                          <UploadCloudIcon size={22} />
+                        </div>
+                        <span className="text-sm font-semibold text-[#18191B] block">
+                          {groundingPdfFile ? `Loaded: ${groundingPdfFile.name} (Click to replace)` : "Click to select a PDF or drag and drop"}
+                        </span>
+                        <span className="text-xs text-[#666C7A] mt-1 block">
+                          Textbooks, academic chapters, lecture slide handouts (.pdf)
+                        </span>
+                      </label>
+                    )}
+                  </div>
+                ) : (
+                  <form onSubmit={handleIngestSource} className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-[#18191B] mb-1 font-mono uppercase tracking-wider">
+                          Document / Section Title
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Chapter 4: Divide-and-Conquer §4.5"
+                          value={groundingTitle}
+                          onChange={(e) => setGroundingTitle(e.target.value)}
+                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F]"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-[#18191B] mb-1 font-mono uppercase tracking-wider">
+                          Discipline
+                        </label>
+                        <select
+                          value={groundingSubject}
+                          onChange={(e) => setGroundingSubject(e.target.value)}
+                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F]"
+                        >
+                          <option value="Computer Science">Computer Science</option>
+                          <option value="Economics">Economics</option>
+                          <option value="Life Sciences">Life Sciences</option>
+                          <option value="Physics">Physics</option>
+                          <option value="Mathematics">Mathematics</option>
+                        </select>
+                      </div>
+                    </div>
+
                     <div>
                       <label className="block text-xs font-semibold text-[#18191B] mb-1 font-mono uppercase tracking-wider">
-                        Document / Section Title
+                        Reference Material Content
                       </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Chapter 4: Divide-and-Conquer §4.5"
-                        value={groundingTitle}
-                        onChange={(e) => setGroundingTitle(e.target.value)}
-                        className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F]"
+                      <textarea
+                        rows={6}
+                        placeholder="Paste primary source content, textbook notes, or proofs..."
+                        value={groundingText}
+                        onChange={(e) => setGroundingText(e.target.value)}
+                        className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F] resize-y"
                         required
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-[#18191B] mb-1 font-mono uppercase tracking-wider">
-                        Discipline
-                      </label>
-                      <select
-                        value={groundingSubject}
-                        onChange={(e) => setGroundingSubject(e.target.value)}
-                        className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F]"
-                      >
-                        <option value="Computer Science">Computer Science</option>
-                        <option value="Economics">Economics</option>
-                        <option value="Life Sciences">Life Sciences</option>
-                        <option value="Physics">Physics</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-[#18191B] mb-1 font-mono uppercase tracking-wider">
-                      Reference Material Content
-                    </label>
-                    <textarea
-                      rows={6}
-                      placeholder="Paste primary source content, textbook notes, or proofs..."
-                      value={groundingText}
-                      onChange={(e) => setGroundingText(e.target.value)}
-                      className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F] resize-y"
-                      required
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isIngesting || !groundingText.trim()}
-                    className="w-full py-3 rounded-full bg-[#1E3A2F] text-[#FAF9F6] hover:bg-[#162C23] text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all"
-                  >
-                    {isIngesting ? (
-                      <>
-                        <RefreshIcon size={14} className="animate-spin" />
-                        <span>Parsing and Indexing Material...</span>
-                      </>
-                    ) : (
-                      <>
-                        <UploadCloudIcon size={14} />
-                        <span>Index Reference Material</span>
-                      </>
-                    )}
-                  </button>
-                </form>
+                    <button
+                      type="submit"
+                      disabled={isIngesting || !groundingText.trim()}
+                      className="w-full py-3 rounded-full bg-[#1E3A2F] text-[#FAF9F6] hover:bg-[#162C23] text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all"
+                    >
+                      {isIngesting ? (
+                        <>
+                          <RefreshIcon size={14} className="animate-spin" />
+                          <span>Parsing and Indexing Material...</span>
+                        </>
+                      ) : (
+                        <>
+                          <UploadCloudIcon size={14} />
+                          <span>Index Reference Material</span>
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
 
                 {/* Ingestion Results Display */}
                 {ingestionResult && (
@@ -1003,7 +1240,7 @@ export const TestsPage: React.FC = () => {
                         {ingestionResult.status} ({ingestionResult.chunks_indexed} Chunks Indexed)
                       </span>
                       <span className="font-mono text-[#575C66]">
-                        {ingestionResult.total_words} Words
+                        {ingestionResult.total_words} Words {ingestionResult.total_pages ? `• ${ingestionResult.total_pages} Pages` : ""}
                       </span>
                     </div>
                     <p className="text-[#575C66]">
@@ -1014,13 +1251,13 @@ export const TestsPage: React.FC = () => {
                       onClick={() => {
                         setSynthSubject(ingestionResult.subject);
                         setSynthTopic(ingestionResult.document_title);
-                        setSynthSourceMaterial(groundingText);
+                        setSynthSourceMaterial(ingestionResult.text || groundingText);
                         setHubTab("synthesize");
                       }}
-                      className="mt-2 px-3 py-1.5 rounded-full bg-[#1E3A2F] text-[#FAF9F6] text-xs font-semibold flex items-center gap-1.5"
+                      className="mt-2 px-3.5 py-2 rounded-full bg-[#1E3A2F] text-[#FAF9F6] hover:bg-[#162C23] text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
                     >
-                      <span>Generate Assessment From This Text</span>
-                      <ArrowRightIcon size={12} />
+                      <SparklesIcon size={13} />
+                      <span>Synthesize Assessment From This Document</span>
                     </button>
                   </div>
                 )}

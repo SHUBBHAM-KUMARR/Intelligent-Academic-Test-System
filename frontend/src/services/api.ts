@@ -141,7 +141,9 @@ export interface SourceUploadResponse {
   message: string;
   document_title: string;
   subject: string;
+  text?: string;
   total_words: number;
+  total_pages?: number;
   chunks_indexed: number;
   status: string;
   chunks: SourceChunk[];
@@ -158,8 +160,10 @@ export interface GenerateTestPayload {
 
 export const api = {
   // 1. Generate an AI test via Academic Agent
-  generateTest: async (payload: GenerateTestPayload): Promise<{ message: string; test: TestData }> => {
-    const res = await axios.post(`${API_BASE}/api/v1/test/generate`, payload);
+  generateTest: async (payload: GenerateTestPayload | FormData): Promise<{ message: string; test: TestData }> => {
+    const res = await axios.post(`${API_BASE}/api/v1/test/generate`, payload, {
+      headers: payload instanceof FormData ? { "Content-Type": "multipart/form-data" } : undefined,
+    });
     return res.data;
   },
 
@@ -200,6 +204,22 @@ export const api = {
   // 6. Ingest source syllabus or reference text for deterministic grounding
   uploadSource: async (payload: { title: string; subject: string; text: string }): Promise<SourceUploadResponse> => {
     const res = await axios.post(`${API_BASE}/api/v1/source/upload`, payload);
+    return res.data;
+  },
+
+  // 6b. Upload and parse PDF document for AI question grounding
+  uploadPdf: async (
+    file: File,
+    metadata?: { title?: string; subject?: string }
+  ): Promise<SourceUploadResponse> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (metadata?.title) formData.append("title", metadata.title);
+    if (metadata?.subject) formData.append("subject", metadata.subject);
+
+    const res = await axios.post(`${API_BASE}/api/v1/source/upload`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return res.data;
   },
 

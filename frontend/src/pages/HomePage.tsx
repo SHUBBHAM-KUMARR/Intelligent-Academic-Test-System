@@ -150,6 +150,7 @@ export const HomePage: React.FC = () => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadResult, setUploadResult] = useState<SourceUploadResponse | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [generatorPdfLoading, setGeneratorPdfLoading] = useState<boolean>(false);
 
   const activeDemoSource = DEMO_SOURCES.find((s) => s.id === selectedSourceId) || DEMO_SOURCES[0];
 
@@ -282,6 +283,54 @@ export const HomePage: React.FC = () => {
       );
     } finally {
       setIsExplaining(false);
+    }
+  };
+
+  // PDF Source Document Upload Handler
+  const handleUploadPdfSource = async (file: File) => {
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+      setUploadError("Please upload a valid PDF (.pdf) file.");
+      return;
+    }
+    setIsUploading(true);
+    setUploadError(null);
+    setUploadResult(null);
+
+    try {
+      const res = await api.uploadPdf(file, {
+        title: groundTitle.trim() || undefined,
+        subject: groundSubject.trim(),
+      });
+      setUploadResult(res);
+      setGroundText(res.text || "");
+      if (!groundTitle) {
+        setGroundTitle(res.document_title);
+      }
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      setUploadError(msg || "Failed to parse PDF document.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Upload PDF directly for Live Generator
+  const handleUploadPdfForGenerator = async (file: File) => {
+    if (!file.name.toLowerCase().endsWith(".pdf")) return;
+    setGeneratorPdfLoading(true);
+    setGenerateError(null);
+    try {
+      const res = await api.uploadPdf(file, { subject: genSubject });
+      if (res.text) {
+        setGenSourceMaterial(res.text);
+        if (!genTopic || genTopic === "Divide-and-Conquer") {
+          setGenTopic(res.document_title);
+        }
+      }
+    } catch (err: unknown) {
+      console.error("PDF generator upload error:", err);
+    } finally {
+      setGeneratorPdfLoading(false);
     }
   };
 
@@ -733,14 +782,29 @@ export const HomePage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-mono uppercase tracking-wider text-[#575C66] mb-1.5">
-                        Source Grounding Material (Optional Excerpt or Syllabus Notes):
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-xs font-mono uppercase tracking-wider text-[#575C66]">
+                          Source Grounding Material:
+                        </label>
+                        <label className="cursor-pointer text-[11px] font-semibold text-[#1E3A2F] hover:underline flex items-center gap-1 font-mono">
+                          <input
+                            type="file"
+                            accept=".pdf,application/pdf"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleUploadPdfForGenerator(file);
+                            }}
+                          />
+                          <UploadCloudIcon size={12} />
+                          <span>{generatorPdfLoading ? "Extracting PDF..." : "Upload PDF Material"}</span>
+                        </label>
+                      </div>
                       <textarea
                         rows={3}
                         value={genSourceMaterial}
                         onChange={(e) => setGenSourceMaterial(e.target.value)}
-                        placeholder="Paste lecture notes or textbook quotation here to ensure 100% deterministic zero-hallucination citations..."
+                        placeholder="Paste lecture notes, textbook quotation, or upload a PDF above..."
                         className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#DDD7CC] text-sm text-[#18191B] focus:outline-none focus:border-[#1E3A2F] font-mono text-xs"
                       />
                     </div>
@@ -994,6 +1058,31 @@ export const HomePage: React.FC = () => {
                         className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#DDD7CC] text-sm text-[#18191B] focus:outline-none focus:border-[#1E3A2F]"
                       />
                     </div>
+                  </div>
+
+                  {/* PDF Upload Dropzone */}
+                  <div className="p-4 rounded-xl border border-dashed border-[#DDD7CC] bg-[#FAF9F6] flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-[#EBF3EE] text-[#1E3A2F] flex items-center justify-center shrink-0 border border-[#CDE1D4]">
+                        <UploadCloudIcon size={20} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold text-[#18191B]">Upload Syllabus or Textbook PDF</div>
+                        <div className="text-[11px] text-[#666C7A]">PDF text will be parsed page-by-page into semantic chunks</div>
+                      </div>
+                    </div>
+                    <label className="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#FFFFFF] border border-[#DDD7CC] text-xs font-semibold text-[#18191B] hover:bg-[#F3EFE7] hover:border-[#1E3A2F] transition-colors shrink-0">
+                      <input
+                        type="file"
+                        accept=".pdf,application/pdf"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleUploadPdfSource(file);
+                        }}
+                      />
+                      <span>Select PDF File</span>
+                    </label>
                   </div>
 
                   <div>
