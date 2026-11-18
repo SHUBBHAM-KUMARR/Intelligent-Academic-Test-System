@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Header } from "../components/Header";
+import { ConceptRemediationCard } from "../components/ConceptRemediationCard";
 import {
   ArrowRightIcon,
   ArrowUpRightIcon,
@@ -458,32 +459,29 @@ export const HomePage: React.FC = () => {
             <div className="flex items-center gap-1.5 bg-[#FFFFFF] p-1 rounded-full border border-[#DDD7CC]">
               <button
                 onClick={() => setCanvasMode("demo")}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  canvasMode === "demo"
-                    ? "bg-[#1E3A2F] text-[#FAF9F6] shadow-sm"
-                    : "text-[#5E6472] hover:text-[#18191B]"
-                }`}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${canvasMode === "demo"
+                  ? "bg-[#1E3A2F] text-[#FAF9F6] shadow-sm"
+                  : "text-[#5E6472] hover:text-[#18191B]"
+                  }`}
               >
                 Curriculum Demos
               </button>
               <button
                 onClick={() => setCanvasMode("generator")}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                  canvasMode === "generator"
-                    ? "bg-[#1E3A2F] text-[#FAF9F6] shadow-sm"
-                    : "text-[#5E6472] hover:text-[#18191B]"
-                }`}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${canvasMode === "generator"
+                  ? "bg-[#1E3A2F] text-[#FAF9F6] shadow-sm"
+                  : "text-[#5E6472] hover:text-[#18191B]"
+                  }`}
               >
                 <SparklesIcon size={12} className={canvasMode === "generator" ? "text-[#FAF9F6]" : "text-[#1E3A2F]"} />
                 <span>AI Test Generator</span>
               </button>
               <button
                 onClick={() => setCanvasMode("grounding")}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                  canvasMode === "grounding"
-                    ? "bg-[#1E3A2F] text-[#FAF9F6] shadow-sm"
-                    : "text-[#5E6472] hover:text-[#18191B]"
-                }`}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${canvasMode === "grounding"
+                  ? "bg-[#1E3A2F] text-[#FAF9F6] shadow-sm"
+                  : "text-[#5E6472] hover:text-[#18191B]"
+                  }`}
               >
                 <BookOpenIcon size={12} />
                 <span>Ground Syllabus</span>
@@ -524,11 +522,10 @@ export const HomePage: React.FC = () => {
                             setSelectedSourceId(source.id);
                             handleResetDemoQuestion();
                           }}
-                          className={`text-left p-3.5 rounded-2xl border transition-all duration-200 ${
-                            isSelected
-                              ? "bg-[#EBF3EE] border-[#1E3A2F]"
-                              : "bg-[#FFFFFF] border-[#E2DDD3] hover:border-[#CEC7B9] hover:bg-[#F8F6F1]"
-                          }`}
+                          className={`text-left p-3.5 rounded-2xl border transition-all duration-200 ${isSelected
+                            ? "bg-[#EBF3EE] border-[#1E3A2F]"
+                            : "bg-[#FFFFFF] border-[#E2DDD3] hover:border-[#CEC7B9] hover:bg-[#F8F6F1]"
+                            }`}
                         >
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-[#F0ECE4] text-[#555B68] font-medium">
@@ -617,11 +614,10 @@ export const HomePage: React.FC = () => {
                           className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-start gap-3.5 group ${borderClass}`}
                         >
                           <span
-                            className={`w-6 h-6 rounded-lg text-xs font-mono flex items-center justify-center shrink-0 border transition-colors ${
-                              isSelected
-                                ? "bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F] font-bold"
-                                : "bg-[#F3EFE7] text-[#5E6472] border-[#DDD7CC] group-hover:border-[#B5AEA1]"
-                            }`}
+                            className={`w-6 h-6 rounded-lg text-xs font-mono flex items-center justify-center shrink-0 border transition-colors ${isSelected
+                              ? "bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F] font-bold"
+                              : "bg-[#F3EFE7] text-[#5E6472] border-[#DDD7CC] group-hover:border-[#B5AEA1]"
+                              }`}
                           >
                             {String.fromCharCode(65 + idx)}
                           </span>
@@ -666,9 +662,9 @@ export const HomePage: React.FC = () => {
                             )
                           }
                           disabled={isExplaining}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#FFFFFF] border border-[#DDD7CC] hover:bg-[#F4F1EA] text-[#18191B] transition-colors"
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-[#FFFFFF] border border-[#BFDBFE] hover:bg-[#EFF6FF] text-[#2563EB] shadow-xs transition-all transform active:scale-95 disabled:opacity-60"
                         >
-                          <BrainIcon size={13} className="text-[#1E3A2F]" />
+                          <BrainIcon size={14} className="text-[#2563EB]" />
                           <span>{isExplaining ? "Consulting AI Tutor..." : "Ask AI Tutor for Deep Remediation"}</span>
                         </button>
                       )}
@@ -677,14 +673,19 @@ export const HomePage: React.FC = () => {
 
                   {/* AI Tutor Remediation Box */}
                   {tutorExplanation && (
-                    <div className="mt-4 p-5 rounded-xl bg-[#FFFFFF] border border-[#DDD7CC] shadow-sm text-left">
-                      <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#1E3A2F] font-semibold mb-3">
-                        <SparklesIcon size={14} />
-                        <span>AI Academic Tutor Remediation</span>
-                      </div>
-                      <div className="text-[13px] text-[#4F5664] whitespace-pre-line leading-relaxed font-['Plus_Jakarta_Sans',sans-serif]">
-                        {tutorExplanation}
-                      </div>
+                    <div className="mt-4">
+                      <ConceptRemediationCard
+                        explanation={tutorExplanation}
+                        questionText={activeDemoSource.question.text}
+                        studentAnswerText={
+                          selectedOption !== null && activeDemoSource.question.options[selectedOption]
+                            ? `Option ${String.fromCharCode(65 + selectedOption)}: ${activeDemoSource.question.options[selectedOption]}`
+                            : undefined
+                        }
+                        correctAnswerText={`Option ${String.fromCharCode(65 + activeDemoSource.question.correctIndex)}: ${activeDemoSource.question.options[activeDemoSource.question.correctIndex]}`}
+                        sourceCitation={activeDemoSource.question.chapter}
+                        onClose={() => setTutorExplanation(null)}
+                      />
                     </div>
                   )}
                 </div>
@@ -911,11 +912,10 @@ export const HomePage: React.FC = () => {
                                   className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-start gap-3.5 group ${optionStyle}`}
                                 >
                                   <span
-                                    className={`w-6 h-6 rounded-lg text-xs font-mono flex items-center justify-center shrink-0 border transition-colors ${
-                                      isPicked
-                                        ? "bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F] font-bold"
-                                        : "bg-[#F3EFE7] text-[#5E6472] border-[#DDD7CC] group-hover:border-[#B5AEA1]"
-                                    }`}
+                                    className={`w-6 h-6 rounded-lg text-xs font-mono flex items-center justify-center shrink-0 border transition-colors ${isPicked
+                                      ? "bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F] font-bold"
+                                      : "bg-[#F3EFE7] text-[#5E6472] border-[#DDD7CC] group-hover:border-[#B5AEA1]"
+                                      }`}
                                   >
                                     {String.fromCharCode(65 + oIdx)}
                                   </span>
@@ -936,9 +936,9 @@ export const HomePage: React.FC = () => {
                               <button
                                 onClick={() => handleAskAITutor(activeQ, userPick)}
                                 disabled={isExplaining}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-[#FFFFFF] border border-[#DDD7CC] hover:bg-[#F4F1EA] text-[#18191B] transition-colors"
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-[#FFFFFF] border border-[#BFDBFE] hover:bg-[#EFF6FF] text-[#2563EB] shadow-xs transition-all transform active:scale-95 disabled:opacity-60"
                               >
-                                <BrainIcon size={14} className="text-[#1E3A2F]" />
+                                <BrainIcon size={14} className="text-[#2563EB]" />
                                 <span>{isExplaining ? "Tutor Analyzing..." : "Ask AI Tutor to Explain"}</span>
                               </button>
                             </div>
@@ -946,14 +946,23 @@ export const HomePage: React.FC = () => {
 
                           {/* Remediation display */}
                           {tutorExplanation && (
-                            <div className="mt-4 p-5 rounded-xl bg-[#FFFFFF] border border-[#DDD7CC] shadow-sm">
-                              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#1E3A2F] font-semibold mb-2">
-                                <SparklesIcon size={14} />
-                                <span>Academic Tutor Guidance</span>
-                              </div>
-                              <p className="text-[13px] text-[#4F5664] whitespace-pre-line leading-relaxed font-['Plus_Jakarta_Sans',sans-serif]">
-                                {tutorExplanation}
-                              </p>
+                            <div className="mt-4">
+                              <ConceptRemediationCard
+                                explanation={tutorExplanation}
+                                questionText={activeQ.text}
+                                studentAnswerText={
+                                  userPick !== undefined && userPick !== null && activeQ.options?.[userPick]
+                                    ? `Option ${String.fromCharCode(65 + userPick)}: ${activeQ.options[userPick]}`
+                                    : undefined
+                                }
+                                correctAnswerText={
+                                  activeQ.correct_index !== undefined && activeQ.options?.[activeQ.correct_index]
+                                    ? `Option ${String.fromCharCode(65 + activeQ.correct_index)}: ${activeQ.options[activeQ.correct_index]}`
+                                    : undefined
+                                }
+                                sourceCitation={activeQ.source_citation}
+                                onClose={() => setTutorExplanation(null)}
+                              />
                             </div>
                           )}
                         </div>
@@ -993,9 +1002,8 @@ export const HomePage: React.FC = () => {
                           <span className="text-xs font-mono font-semibold text-[#1E3A2F]">
                             Graded Score: {submissionResult.score} / {submissionResult.total_marks} ({submissionResult.percentage}%)
                           </span>
-                          <span className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold ${
-                            submissionResult.passed ? "bg-[#EBF3EE] text-[#1E3A2F]" : "bg-[#FDF2F2] text-[#991B1B]"
-                          }`}>
+                          <span className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold ${submissionResult.passed ? "bg-[#EBF3EE] text-[#1E3A2F]" : "bg-[#FDF2F2] text-[#991B1B]"
+                            }`}>
                             {submissionResult.passed ? "PASSED" : "RETAKE REQUIRED"}
                           </span>
                         </div>
@@ -1307,11 +1315,10 @@ export const HomePage: React.FC = () => {
               <button
                 key={idx}
                 onClick={() => setActiveTab(idx)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${
-                  activeTab === idx
-                    ? "bg-[#1E3A2F] text-[#FAF9F6] shadow-sm"
-                    : "text-[#5E6472] hover:text-[#18191B]"
-                }`}
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${activeTab === idx
+                  ? "bg-[#1E3A2F] text-[#FAF9F6] shadow-sm"
+                  : "text-[#5E6472] hover:text-[#18191B]"
+                  }`}
               >
                 {label}
               </button>

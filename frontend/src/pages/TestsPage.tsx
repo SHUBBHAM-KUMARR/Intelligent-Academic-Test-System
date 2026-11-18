@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { ConceptRemediationCard } from "../components/ConceptRemediationCard";
 import {
   api,
   type TestData,
@@ -357,11 +358,10 @@ export const TestsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setViewMode("hub")}
-                className={`text-[13px] font-semibold px-3.5 py-1.5 rounded-full transition-colors ${
-                  viewMode === "hub"
-                    ? "bg-[#EBF3EE] text-[#1E3A2F] border border-[#CDE1D4]"
-                    : "text-[#575C66] hover:text-[#18191B] hover:bg-[#F7F5EF]"
-                }`}
+                className={`text-[13px] font-semibold px-3.5 py-1.5 rounded-full transition-colors ${viewMode === "hub"
+                  ? "bg-[#EBF3EE] text-[#1E3A2F] border border-[#CDE1D4]"
+                  : "text-[#575C66] hover:text-[#18191B] hover:bg-[#F7F5EF]"
+                  }`}
               >
                 Assessments
               </button>
@@ -451,22 +451,20 @@ export const TestsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setHubTab("browse")}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  hubTab === "browse"
-                    ? "bg-[#FFFFFF] text-[#18191B] shadow-sm border border-[#DDD7CC]"
-                    : "text-[#575C66] hover:text-[#18191B]"
-                }`}
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${hubTab === "browse"
+                  ? "bg-[#FFFFFF] text-[#18191B] shadow-sm border border-[#DDD7CC]"
+                  : "text-[#575C66] hover:text-[#18191B]"
+                  }`}
               >
                 Available Tests ({filteredTests.length})
               </button>
               <button
                 type="button"
                 onClick={() => setHubTab("synthesize")}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                  hubTab === "synthesize"
-                    ? "bg-[#FFFFFF] text-[#18191B] shadow-sm border border-[#DDD7CC]"
-                    : "text-[#575C66] hover:text-[#18191B]"
-                }`}
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${hubTab === "synthesize"
+                  ? "bg-[#FFFFFF] text-[#18191B] shadow-sm border border-[#DDD7CC]"
+                  : "text-[#575C66] hover:text-[#18191B]"
+                  }`}
               >
                 <SparklesIcon size={13} className="text-[#1E3A2F]" />
                 <span>AI Test Synthesizer</span>
@@ -474,11 +472,10 @@ export const TestsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setHubTab("grounding")}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                  hubTab === "grounding"
-                    ? "bg-[#FFFFFF] text-[#18191B] shadow-sm border border-[#DDD7CC]"
-                    : "text-[#575C66] hover:text-[#18191B]"
-                }`}
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${hubTab === "grounding"
+                  ? "bg-[#FFFFFF] text-[#18191B] shadow-sm border border-[#DDD7CC]"
+                  : "text-[#575C66] hover:text-[#18191B]"
+                  }`}
               >
                 <BookOpenIcon size={13} />
                 <span>Syllabus Grounding</span>
@@ -576,13 +573,12 @@ export const TestsPage: React.FC = () => {
                               </span>
 
                               <span
-                                className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border ${
-                                  test.difficulty === "hard"
-                                    ? "bg-[#FDF2F2] border-[#E07A7A] text-[#991B1B]"
-                                    : test.difficulty === "medium"
+                                className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border ${test.difficulty === "hard"
+                                  ? "bg-[#FDF2F2] border-[#E07A7A] text-[#991B1B]"
+                                  : test.difficulty === "medium"
                                     ? "bg-[#F7F5EF] border-[#DDD7CC] text-[#854D0E]"
                                     : "bg-[#EBF3EE] border-[#CDE1D4] text-[#2D734E]"
-                                }`}
+                                  }`}
                               >
                                 {test.difficulty}
                               </span>
@@ -867,22 +863,20 @@ export const TestsPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setGroundingMode("pdf")}
-                      className={`px-3.5 py-1 rounded-full text-xs font-semibold transition-all ${
-                        groundingMode === "pdf"
-                          ? "bg-[#FFFFFF] text-[#18191B] shadow-sm border border-[#DDD7CC]"
-                          : "text-[#575C66] hover:text-[#18191B]"
-                      }`}
+                      className={`px-3.5 py-1 rounded-full text-xs font-semibold transition-all ${groundingMode === "pdf"
+                        ? "bg-[#FFFFFF] text-[#18191B] shadow-sm border border-[#DDD7CC]"
+                        : "text-[#575C66] hover:text-[#18191B]"
+                        }`}
                     >
                       Upload PDF Document
                     </button>
                     <button
                       type="button"
                       onClick={() => setGroundingMode("text")}
-                      className={`px-3.5 py-1 rounded-full text-xs font-semibold transition-all ${
-                        groundingMode === "text"
-                          ? "bg-[#FFFFFF] text-[#18191B] shadow-sm border border-[#DDD7CC]"
-                          : "text-[#575C66] hover:text-[#18191B]"
-                      }`}
+                      className={`px-3.5 py-1 rounded-full text-xs font-semibold transition-all ${groundingMode === "text"
+                        ? "bg-[#FFFFFF] text-[#18191B] shadow-sm border border-[#DDD7CC]"
+                        : "text-[#575C66] hover:text-[#18191B]"
+                        }`}
                     >
                       Paste Manual Text
                     </button>
@@ -1141,19 +1135,17 @@ export const TestsPage: React.FC = () => {
                               [currentQuestionIndex]: optIdx,
                             }))
                           }
-                          className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
-                            isSelected
-                              ? "bg-[#EBF3EE] border-[#1E3A2F] text-[#18191B] shadow-sm"
-                              : "bg-[#FFFFFF] hover:bg-[#F7F5EF] border-[#E4DFD5] text-[#18191B]"
-                          }`}
+                          className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${isSelected
+                            ? "bg-[#EBF3EE] border-[#1E3A2F] text-[#18191B] shadow-sm"
+                            : "bg-[#FFFFFF] hover:bg-[#F7F5EF] border-[#E4DFD5] text-[#18191B]"
+                            }`}
                         >
                           <div className="flex items-center gap-3">
                             <span
-                              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-semibold border ${
-                                isSelected
-                                  ? "bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F]"
-                                  : "bg-[#F7F5EF] text-[#575C66] border-[#DDD7CC]"
-                              }`}
+                              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-semibold border ${isSelected
+                                ? "bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F]"
+                                : "bg-[#F7F5EF] text-[#575C66] border-[#DDD7CC]"
+                                }`}
                             >
                               {optionLetter}
                             </span>
@@ -1183,13 +1175,12 @@ export const TestsPage: React.FC = () => {
                             key={idx}
                             type="button"
                             onClick={() => setCurrentQuestionIndex(idx)}
-                            className={`w-7 h-7 rounded-full text-xs font-mono transition-all ${
-                              isCurrent
-                                ? "bg-[#EBF3EE] text-[#1E3A2F] font-bold border-2 border-[#1E3A2F]"
-                                : isAnswered
+                            className={`w-7 h-7 rounded-full text-xs font-mono transition-all ${isCurrent
+                              ? "bg-[#EBF3EE] text-[#1E3A2F] font-bold border-2 border-[#1E3A2F]"
+                              : isAnswered
                                 ? "bg-[#1E3A2F] text-[#FAF9F6] font-semibold"
                                 : "bg-[#F7F5EF] text-[#666C7A] border border-[#DDD7CC]"
-                            }`}
+                              }`}
                           >
                             {idx + 1}
                           </button>
@@ -1251,11 +1242,10 @@ export const TestsPage: React.FC = () => {
           <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300">
             {/* Top Score Banner */}
             <div
-              className={`rounded-3xl border p-6 sm:p-8 shadow-[0_2px_8px_rgba(0,0,0,0.02)] ${
-                submissionResult.passed
-                  ? "bg-[#EBF3EE] border-[#CDE1D4]"
-                  : "bg-[#FDF2F2] border-[#E07A7A]"
-              }`}
+              className={`rounded-3xl border p-6 sm:p-8 shadow-[0_2px_8px_rgba(0,0,0,0.02)] ${submissionResult.passed
+                ? "bg-[#EBF3EE] border-[#CDE1D4]"
+                : "bg-[#FDF2F2] border-[#E07A7A]"
+                }`}
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -1344,11 +1334,10 @@ export const TestsPage: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-[#18191B]">Question {idx + 1}</span>
                           <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
-                              isCorrect
-                                ? "bg-[#EBF3EE] border-[#CDE1D4] text-[#2D734E]"
-                                : "bg-[#FDF2F2] border-[#E07A7A] text-[#991B1B]"
-                            }`}
+                            className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${isCorrect
+                              ? "bg-[#EBF3EE] border-[#CDE1D4] text-[#2D734E]"
+                              : "bg-[#FDF2F2] border-[#E07A7A] text-[#991B1B]"
+                              }`}
                           >
                             {isCorrect ? "CORRECT" : "INCORRECT"}
                           </span>
@@ -1373,13 +1362,12 @@ export const TestsPage: React.FC = () => {
                           return (
                             <div
                               key={optIdx}
-                              className={`p-2.5 rounded-xl border flex items-center justify-between ${
-                                isKey
-                                  ? "bg-[#EBF3EE] border-[#CDE1D4] text-[#1E3A2F] font-medium"
-                                  : isStudentPick && !isCorrect
+                              className={`p-2.5 rounded-xl border flex items-center justify-between ${isKey
+                                ? "bg-[#EBF3EE] border-[#CDE1D4] text-[#1E3A2F] font-medium"
+                                : isStudentPick && !isCorrect
                                   ? "bg-[#FDF2F2] border-[#E07A7A] text-[#991B1B]"
                                   : "bg-[#FFFFFF] border-[#E4DFD5] text-[#575C66]"
-                              }`}
+                                }`}
                             >
                               <span>
                                 <strong>{String.fromCharCode(65 + optIdx)}.</strong> {opt}
@@ -1415,21 +1403,32 @@ export const TestsPage: React.FC = () => {
                       {/* AI Tutor Remediation Section */}
                       <div className="pt-2">
                         {aiExplanation ? (
-                          <div className="p-3.5 rounded-xl bg-[#FFFFFF] border border-[#CDE1D4] text-xs text-[#18191B] space-y-1">
-                            <div className="flex items-center gap-1.5 text-[#1E3A2F] font-mono text-[11px] font-semibold">
-                              <SparklesIcon size={13} />
-                              <span>AI Tutor Concept Remediation</span>
-                            </div>
-                            <p className="text-[#575C66] leading-relaxed">{aiExplanation}</p>
-                          </div>
+                          <ConceptRemediationCard
+                            explanation={aiExplanation}
+                            questionText={q.text}
+                            studentAnswerText={
+                              studentAnswer !== undefined && studentAnswer !== null && q.options?.[studentAnswer]
+                                ? `Option ${String.fromCharCode(65 + studentAnswer)}: ${q.options[studentAnswer]}`
+                                : undefined
+                            }
+                            correctAnswerText={
+                              q.correct_index !== undefined && q.options?.[q.correct_index]
+                                ? `Option ${String.fromCharCode(65 + q.correct_index)}: ${q.options[q.correct_index]}`
+                                : undefined
+                            }
+                            sourceCitation={ev?.source_citation || q.source_citation}
+                          />
                         ) : (
                           <button
                             type="button"
                             onClick={() => handleExplainConcept(q, studentAnswer ?? 0, idx)}
                             disabled={explainingQuestionId === idx}
-                            className="px-3 py-1.5 rounded-full bg-[#FFFFFF] border border-[#DDD7CC] hover:bg-[#EBF3EE] hover:text-[#1E3A2F] text-xs font-semibold text-[#575C66] flex items-center gap-1.5 transition-colors"
+                            className="px-4 py-2 rounded-full bg-[#FFFFFF] border border-[#BFDBFE] hover:bg-[#EFF6FF] text-[#2563EB] text-xs font-semibold flex items-center gap-2 shadow-xs transition-all transform active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                           >
-                            <SparklesIcon size={12} className={explainingQuestionId === idx ? "animate-spin text-[#1E3A2F]" : "text-[#1E3A2F]"} />
+                            <SparklesIcon
+                              size={13}
+                              className={explainingQuestionId === idx ? "animate-spin text-[#2563EB]" : "text-[#2563EB]"}
+                            />
                             <span>
                               {explainingQuestionId === idx
                                 ? "Consulting AI Tutor..."

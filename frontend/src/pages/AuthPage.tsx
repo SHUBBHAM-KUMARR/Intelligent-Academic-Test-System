@@ -30,7 +30,7 @@ export const AuthPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(true);
+  // const [rememberMe, setRememberMe] = useState(true);
 
   // UI states
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -162,12 +162,16 @@ export const AuthPage: React.FC = () => {
           </div>
           <div className="flex flex-col text-left">
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-base tracking-tight text-[#18191B]">
+              <span className=" font-semibold text-base tracking-tight text-[#18191B]">
                 IATS
               </span>
-              <span className="text-[10px] tracking-widest font-mono uppercase px-1.5 py-0.5 rounded bg-[#EBF3EE] text-[#1E3A2F] border border-[#D2E3D8] font-medium">
-                v1.0
-              </span>
+              &nbsp;
+              <sup>
+
+                <span className="text-[10px] tracking-widest font-mono uppercase px-1.5 py-0.5 rounded bg-[#EBF3EE] text-[#1E3A2F] border border-[#D2E3D8] font-medium">
+                  Beta
+                </span>
+              </sup>
             </div>
           </div>
         </Link>
@@ -292,9 +296,7 @@ export const AuthPage: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="text-sm font-semibold text-[#18191B]">Protected Question Repositories</h4>
-                    <p className="text-xs text-[#666C7A] mt-0.5">
-                      Role-based authorization guarantees test keys and institutional test banks remain confidential.
-                    </p>
+
                   </div>
                 </div>
               </div>
@@ -330,7 +332,7 @@ export const AuthPage: React.FC = () => {
                 )}
 
                 {/* Institutional SSO Button */}
-                <button
+                {/* <button
                   type="button"
                   onClick={() => {
                     setAlert({
@@ -342,15 +344,15 @@ export const AuthPage: React.FC = () => {
                 >
                   <BuildingIcon size={15} className="text-[#1E3A2F]" />
                   <span>Continue with Campus SSO or Google Workspace</span>
-                </button>
+                </button> */}
 
                 {/* Divider */}
-                <div className="relative flex items-center justify-center mb-5">
+                {/* <div className="relative flex items-center justify-center mb-5">
                   <div className="w-full border-t border-[#E4DFD5]" />
                   <span className="absolute bg-[#FFFFFF] px-3 text-[10.5px] uppercase font-mono tracking-wider text-[#787F8D]">
                     or continue with email
                   </span>
-                </div>
+                </div> */}
 
                 {/* Form Elements */}
                 <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -424,7 +426,7 @@ export const AuthPage: React.FC = () => {
                   {/* Login Options: Remember Me & Forgot Password */}
                   {mode === "login" && (
                     <div className="flex items-center justify-between text-xs pt-1">
-                      <label className="flex items-center gap-2 cursor-pointer text-[#575C66] select-none">
+                      {/* <label className="flex items-center gap-2 cursor-pointer text-[#575C66] select-none">
                         <input
                           type="checkbox"
                           checked={rememberMe}
@@ -432,7 +434,7 @@ export const AuthPage: React.FC = () => {
                           className="w-3.5 h-3.5 rounded border-[#DDD7CC] text-[#1E3A2F] focus:ring-0 accent-[#1E3A2F]"
                         />
                         <span>Remember this device</span>
-                      </label>
+                      </label> */}
 
                       <button
                         type="button"
@@ -468,36 +470,7 @@ export const AuthPage: React.FC = () => {
                 </form>
 
                 {/* Footer Switcher Note */}
-                <div className="mt-6 pt-5 border-t border-[#E4DFD5] text-center text-xs text-[#666C7A]">
-                  {mode === "login" ? (
-                    <p>
-                      Don't have an academic account?{" "}
-                      <button
-                        type="button"
-                        onClick={() => handleModeChange("register")}
-                        className="text-[#1E3A2F] font-semibold hover:underline"
-                      >
-                        Create an account
-                      </button>
-                    </p>
-                  ) : (
-                    <p>
-                      Already registered?{" "}
-                      <button
-                        type="button"
-                        onClick={() => handleModeChange("login")}
-                        className="text-[#1E3A2F] font-semibold hover:underline"
-                      >
-                        Sign in instead
-                      </button>
-                    </p>
-                  )}
-                </div>
 
-                {/* Terms Disclaimer */}
-                <p className="mt-4 text-[10.5px] text-center text-[#787F8D] leading-normal">
-                  By signing in or registering, you acknowledge compliance with academic integrity policies and source calibration terms.
-                </p>
               </AuthCard>
             </div>
           </div>
@@ -549,12 +522,8 @@ export const AuthPage: React.FC = () => {
 
       {/* Minimal Footer */}
       <footer className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 border-t border-[#DDD7CC] text-center text-[11px] text-[#787F8D] flex flex-col sm:flex-row items-center justify-between gap-2">
-        <div>© {new Date().getFullYear()} IATS. Intelligent Academic Test System.</div>
-        <div className="flex gap-4">
-          <span className="text-[#1E3A2F] font-medium">Mild Light Theme · Zero Gradients</span>
-          <span>·</span>
-          <span>Role-Based JWT Security</span>
-        </div>
+        <div>© {new Date().getFullYear()} &nbsp;IATS. Intelligent Academic Test System.</div>
+
       </footer>
     </div>
   );

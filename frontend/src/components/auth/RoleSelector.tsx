@@ -46,7 +46,7 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({
           }`}
         >
           <ShieldCheckIcon size={15} />
-          <span>Educator / Admin</span>
+          <span> Admin</span>
         </button>
       </div>
 

@@ -9,7 +9,7 @@ interface AuthCardProps {
 
 export const AuthCard: React.FC<AuthCardProps> = ({ mode, onModeChange, children }) => {
   return (
-    <div className="w-full max-w-md mx-auto bg-[#FFFFFF] border border-[#DDD7CC] rounded-3xl p-7 sm:p-9 shadow-[0_4px_24px_rgba(0,0,0,0.04)] text-left">
+    <div className="w-fit max-w-md mx-auto bg-[#FFFFFF] border border-[#DDD7CC] rounded-3xl p-7 sm:p-9 shadow-[0_4px_24px_rgba(0,0,0,0.04)] text-left">
       {/* Brand Icon & Heading */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2.5">
@@ -59,9 +59,10 @@ export const AuthCard: React.FC<AuthCardProps> = ({ mode, onModeChange, children
               Welcome back to <span className="italic text-[#1E3A2F]">academic testing</span>.
             </>
           ) : (
-            <>
-              Create your <span className="italic text-[#1E3A2F]">academic testing</span> account.
-            </>
+            null
+            // <>
+            //   Create your <span className="italic text-[#1E3A2F]">academic testing</span> account.
+            // </>
           )}
         </h2>
         <p className="text-xs sm:text-[13px] text-[#575C66] leading-relaxed">
