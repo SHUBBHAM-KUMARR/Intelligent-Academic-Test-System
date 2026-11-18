@@ -140,12 +140,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
               <SparklesIcon size={14} className="text-[#1E3A2F]" />
               <span>Live Playground</span>
             </a>
-            <a
-              href="/#architecture"
-              className="text-[13.5px] font-medium text-[#585E6A] hover:text-[#18191B] px-3.5 py-1.5 rounded-full hover:bg-[#F3F0EA] transition-colors"
-            >
-              Architecture
-            </a>
+          
 
             {isAuthenticated && (
               <>
@@ -205,27 +200,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
               <>
                 <Link
                   to="/auth?mode=login"
-                  className="hidden sm:inline-flex text-[13px] font-medium text-[#585E6A] hover:text-[#18191B] px-3.5 py-2 transition-colors"
-                >
+                  className="relative inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] font-semibold bg-[#1E3A2F] text-[#FAF9F6] hover:bg-[#162C23] shadow-sm transition-all duration-200 transform active:scale-95 group"
+                  >
                   Sign In
                 </Link>
 
-                <button
-                  onClick={() => {
-                    if (onOpenTestModal) {
-                      onOpenTestModal();
-                    } else {
-                      navigate("/auth?mode=register");
-                    }
-                  }}
-                  className="relative inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] font-semibold bg-[#1E3A2F] text-[#FAF9F6] hover:bg-[#162C23] shadow-sm transition-all duration-200 transform active:scale-95 group"
-                >
-                  <span>Get Started</span>
-                  <ArrowRightIcon
-                    size={14}
-                    className="transition-transform duration-200 group-hover:translate-x-0.5"
-                  />
-                </button>
+               
               </>
             )}
 
