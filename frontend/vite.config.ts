@@ -7,6 +7,6 @@ export default defineConfig({
   plugins: [tailwindcss(), react()],
   envDir: './env',
   preview:{
-    allowedHosts:"intelligent-academic-test-system.onrender.com",
+    allowedHosts:true,
   }
 })
