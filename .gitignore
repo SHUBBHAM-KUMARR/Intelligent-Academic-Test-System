@@ -1,5 +1,6 @@
 # Python
 __pycache__/
+.pytest_cache
 *.py[cod]
 *$py.class
 *.so
@@ -30,6 +31,25 @@ build/
 .DS_Store
 Thumbs.db
 
+
+# Database
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+
 #ssh connection
 ssh.bash
+<<<<<<< HEAD
 agent.md
+=======
+sk.bash
+
+# Agent instructions & prompt memory
+frontend/AGENT.md
+.agent*
+
+
+backend/test_files/ai_synthesizer_errors_and_fixes.md
+>>>>>>> dev
