@@ -1,2 +1,6 @@
 .env
+<<<<<<< HEAD
 test_files
+=======
+test_files/
+>>>>>>> iats

@@ -138,3 +138,134 @@ def test_parse_questions_json():
     assert len(parsed) == 1
     assert parsed[0]["text"] == "What does Master Theorem case 1 evaluate?"
     assert parsed[0]["points"] == 1.5
+
+
+def test_parse_questions_with_reasoning_tags_and_truncation():
+    """Test parser handles <think> reasoning tags and partially truncated JSON streams."""
+    med = MediumTest()
+
+    # Case 1: Reasoning model output with <think> tag
+    reasoning_output = """
+    <think>
+    I need to synthesize questions based on the uploaded syllabus notes.
+    The topic is Dynamic Programming. Let's form 1 question.
+    </think>
+    ```json
+    [
+        {
+            "text": "What characterizes optimal substructure?",
+            "type": "mcq",
+            "bloom_level": "Understanding",
+            "options": ["Subproblem optimality", "Random walk", "Greedy jump", "None"],
+            "correct_index": 0,
+            "explanation": "Optimal solutions contain optimal solutions to subproblems.",
+            "source_citation": "CLRS §15",
+            "points": 1.5,
+            "difficulty": "medium"
+        }
+    ]
+    ```
+    """
+    parsed1 = med.parse_questions(reasoning_output)
+    assert len(parsed1) == 1
+    assert parsed1[0]["text"] == "What characterizes optimal substructure?"
+
+    # Case 2: Truncated JSON stream rescued by candidate extractor
+    truncated_stream = """
+    <think>Analyzing...</think>
+    [
+        {
+            "text": "What is memoization?",
+            "type": "mcq",
+            "bloom_level": "Understanding",
+            "options": ["Top-down caching", "Bottom-up tabulation"],
+            "correct_index": 0,
+            "explanation": "Caches subproblem solutions.",
+            "source_citation": "Notes Page 4",
+            "points": 1.5,
+            "difficulty": "medium"
+        },
+        {
+            "text": "Unfinished question cut off by max tokens
+    """
+    parsed2 = med.parse_questions(truncated_stream)
+    assert len(parsed2) >= 1
+    assert parsed2[0]["text"] == "What is memoization?"
+
+
+def test_build_prompt_bounds_large_source_material():
+    """Test that build_prompt bounds excessively large uploaded documents to safe token limits."""
+    med = MediumTest()
+    huge_pdf_text = "Standard academic text definition. " * 1000  # ~35,000 characters
+    prompt = med.build_prompt(
+        subject="Computer Science",
+        topic="Algorithms",
+        source_material=huge_pdf_text,
+        num_questions=5,
+    )
+    # Ensure source context in prompt is safely condensed
+    assert len(prompt) < 18000
+    assert "[... Additional document content condensed" in prompt
+
+
+def test_parse_questions_with_preceding_python_block():
+    """Test that parser does not discard JSON questions when preceded by a ```python ... ``` block."""
+    med = MediumTest()
+    response_with_python_and_json = """
+    ```python
+    def foo(x):
+        if x < 0:
+            raise ValueError("Negative value")
+        return x * 2
+
+    try:
+        print(foo(-1))
+    except ValueError as e:
+        print(e)
+    ```
+
+    ```json
+    [
+        {
+            "text": "What will be printed when foo(-1) is executed?",
+            "type": "analytical_mcq",
+            "bloom_level": "Analysis",
+            "options": ["Negative value", "-2", "Error", "None"],
+            "correct_index": 0,
+            "explanation": "Exception is caught and message printed.",
+            "source_citation": "Python Exception Handling",
+            "points": 1.5,
+            "difficulty": "medium"
+        }
+    ]
+    ```
+    """
+    parsed = med.parse_questions(response_with_python_and_json)
+    assert len(parsed) == 1
+    assert "foo(-1)" in parsed[0]["text"]
+    assert parsed[0]["correct_index"] == 0
+
+
+def test_parse_questions_pure_code_fallback():
+    """Test that pure code snippets (without JSON) are synthesized into valid analytical questions."""
+    med = MediumTest()
+    pure_code = """
+    ```python
+    def foo(x):
+        if x < 0:
+            raise ValueError("Negative value")
+        return x * 2
+
+    try:
+        print(foo(-1))
+    except ValueError as e:
+        print(e)
+    ```
+    """
+    parsed = med.parse_questions(pure_code)
+    assert len(parsed) == 1
+    assert "foo" in parsed[0]["text"]
+    assert parsed[0]["type"] == "analytical_mcq"
+    assert len(parsed[0]["options"]) >= 2
+
+
