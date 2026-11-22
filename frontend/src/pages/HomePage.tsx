@@ -11,7 +11,6 @@ import {
   ShieldCheckIcon,
   ZapIcon,
   BarChartIcon,
-  LayersIcon,
   SlidersIcon,
   RefreshIcon,
   SparklesIcon,
@@ -420,10 +419,7 @@ export const HomePage: React.FC = () => {
 
         {/* Value Micro-Pills */}
         <div className="flex flex-wrap items-center justify-center gap-y-2 gap-x-6 text-[12.5px] text-[#666C7A] font-medium">
-          <div className="flex items-center gap-2">
-            <CheckCircleIcon size={15} className="text-[#2D734E]" />
-            <span>Zero Hallucinations</span>
-          </div>
+        
           <div className="flex items-center gap-2">
             <CheckCircleIcon size={15} className="text-[#2D734E]" />
             <span>Bloom’s Taxonomy Calibrated</span>
@@ -432,10 +428,7 @@ export const HomePage: React.FC = () => {
             <CheckCircleIcon size={15} className="text-[#2D734E]" />
             <span>Automated Instant Rubric</span>
           </div>
-          <div className="flex items-center gap-2">
-            <CheckCircleIcon size={15} className="text-[#2D734E]" />
-            <span>Groq Llama 3.3 Reasoning</span>
-          </div>
+          
         </div>
       </section>
 
@@ -451,7 +444,7 @@ export const HomePage: React.FC = () => {
                 <div className="w-3 h-3 rounded-full bg-[#D6D0C4]" />
               </div>
               <span className="text-xs font-mono text-[#6A707E] tracking-wide ml-2">
-                IATS // Adaptive Assessment Engine · Groq Llama 3.3
+                IATS // Adaptive Assessment Engine ·
               </span>
             </div>
 
@@ -705,12 +698,10 @@ export const HomePage: React.FC = () => {
                           Synthesize Grounded Academic Assessment
                         </h3>
                         <p className="text-xs text-[#666C7A] mt-1">
-                          Powered by Groq Free Tier (Llama 3.3 70B Versatile). Strict adherence to Bloom's Taxonomy.
+                         Strict adherence to Bloom's Taxonomy.
                         </p>
                       </div>
-                      <span className="text-[11px] font-mono px-2.5 py-1 rounded bg-[#EBF3EE] text-[#1E3A2F] border border-[#CDE1D4]">
-                        POST /api/v1/test/generate
-                      </span>
+                   
                     </div>
 
                     {generateError && (
@@ -760,10 +751,10 @@ export const HomePage: React.FC = () => {
                           onChange={(e) => setGenDifficulty(e.target.value)}
                           className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#DDD7CC] text-sm text-[#18191B] focus:outline-none focus:border-[#1E3A2F]"
                         >
-                          <option value="easy">Easy (Bloom I-II: Remembering, Definitions)</option>
-                          <option value="medium">Medium (Bloom III-IV: Application, Analysis)</option>
-                          <option value="hard">Hard (Bloom V-VI: Evaluation, Synthesis)</option>
-                          <option value="adaptive">Adaptive (Dynamic Real-Time Calibration)</option>
+                          <option value="easy">Easy</option>
+                          <option value="medium">Medium</option>
+                          <option value="hard">Hard</option>
+                          <option value="adaptive">Adaptive</option>
                         </select>
                       </div>
 
@@ -1028,9 +1019,7 @@ export const HomePage: React.FC = () => {
                       Ingest and index reference material. Eliminates hallucinations by establishing deterministic citations.
                     </p>
                   </div>
-                  <span className="text-[11px] font-mono px-2.5 py-1 rounded bg-[#EBF3EE] text-[#1E3A2F] border border-[#CDE1D4]">
-                    POST /api/v1/source/upload
-                  </span>
+               
                 </div>
 
                 {uploadError && (
@@ -1270,31 +1259,9 @@ export const HomePage: React.FC = () => {
             </p>
           </div>
 
-          {/* Card 5 */}
-          <div className="p-8 rounded-3xl bg-[#FFFFFF] border border-[#DDD7CC] hover:border-[#B5AEA1] shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-200 group">
-            <div className="w-12 h-12 rounded-2xl bg-[#EBF3EE] border border-[#D2E3D8] text-[#1E3A2F] flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
-              <ShieldCheckIcon size={22} />
-            </div>
-            <h3 className="text-xl font-medium text-[#18191B] mb-2 font-['Plus_Jakarta_Sans',sans-serif]">
-              JWT Role Authentication
-            </h3>
-            <p className="text-sm text-[#575C66] leading-relaxed">
-              Enterprise-grade role-based access control (Student, Educator, Administrator) with isolated question repositories and protected test keys.
-            </p>
-          </div>
+       
 
-          {/* Card 6 */}
-          <div className="p-8 rounded-3xl bg-[#FFFFFF] border border-[#DDD7CC] hover:border-[#B5AEA1] shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-200 group">
-            <div className="w-12 h-12 rounded-2xl bg-[#EBF3EE] border border-[#D2E3D8] text-[#1E3A2F] flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
-              <LayersIcon size={22} />
-            </div>
-            <h3 className="text-xl font-medium text-[#18191B] mb-2 font-['Plus_Jakarta_Sans',sans-serif]">
-              Groq Free Tier AI Agent
-            </h3>
-            <p className="text-sm text-[#575C66] leading-relaxed">
-              Powered by high-speed Llama 3.3 70B Versatile on Groq with automatic offline fallback so testing never fails.
-            </p>
-          </div>
+          
         </div>
       </section>
 
