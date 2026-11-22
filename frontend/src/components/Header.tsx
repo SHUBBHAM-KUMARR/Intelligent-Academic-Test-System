@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   GraduationCapIcon,
-  ArrowRightIcon,
   MenuIcon,
   XIcon,
   SparklesIcon,
@@ -19,13 +18,13 @@ interface HeaderProps {
   onOpenTestModal?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenTestModal }) => {
+export const Header: React.FC<HeaderProps> = ({  }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const { user, isAuthenticated, logout } = useAuth();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
