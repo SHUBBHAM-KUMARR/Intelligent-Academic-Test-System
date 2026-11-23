@@ -1,4 +1,5 @@
 from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 from flask import request, jsonify, current_app
 from marshmallow import ValidationError
 import jwt
@@ -12,7 +13,7 @@ user_schema = UserSchema()
 admin_schema = AdminSchema()
 
 
-def generate_token(user, expires_in_days: int = 7) -> str:
+def generate_token(user) -> str:
     """Generate a JWT token for an authenticated user or admin."""
     secret_key = current_app.config.get("SECRET_KEY", "dev-secret-key-change-in-production-min32")
     payload = {
@@ -20,8 +21,8 @@ def generate_token(user, expires_in_days: int = 7) -> str:
         "email": user.email,
         "name": user.name,
         "role": getattr(user, "role", "student"),
-        "iat": datetime.now(timezone.utc),
-        "exp": datetime.now(timezone.utc) + timedelta(days=expires_in_days),
+        "iat": datetime.now(ZoneInfo("Asia/Kolkata")),
+        "exp": datetime.now(ZoneInfo("Asia/Kolkata")) + timedelta(days=2),
     }
     return jwt.encode(payload, secret_key, algorithm="HS256")
 
