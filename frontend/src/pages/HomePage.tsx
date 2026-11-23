@@ -117,12 +117,12 @@ export const HomePage: React.FC = () => {
   const [calibrationScore, setCalibrationScore] = useState<number>(78);
 
   // Live Test Generator State (Backend API)
-  const [genSubject, setGenSubject] = useState<string>("Computer Science");
-  const [genTopic, setGenTopic] = useState<string>("Divide and Conquer");
+  const [genSubject, setGenSubject] = useState<string>();
+  const [genTopic, setGenTopic] = useState<string>();
   const [genDifficulty, setGenDifficulty] = useState<string>("medium");
   const [genNumQuestions, setGenNumQuestions] = useState<number>(3);
   const [genSourceMaterial, setGenSourceMaterial] = useState<string>(
-    "CLRS §4.5: The master method provides an asymptotic cookbook recipe for solving algorithmic recurrences of the form T(n) = aT(n/b) + f(n)."
+   
   );
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [generateError, setGenerateError] = useState<string | null>(null);
@@ -1353,7 +1353,7 @@ export const HomePage: React.FC = () => {
             <div className="p-8 sm:p-10 bg-[#FCFBF8]">
               <div className="flex items-center gap-2 text-xs font-mono uppercase text-[#A82A2A] font-medium mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#A82A2A]" />
-                <span>Generic LLMs (ChatGPT / Claude)</span>
+                <span>Generic LLMs</span>
               </div>
               <ul className="space-y-5 text-sm text-[#5E6472]">
                 <li className="flex items-start gap-3">
@@ -1396,7 +1396,7 @@ export const HomePage: React.FC = () => {
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckIcon size={16} className="text-[#1E3A2F] mt-0.5 shrink-0" />
-                  <span><strong>Educator Governance:</strong> Full JWT role hierarchy with student progress analytics and assessment management.</span>
+                  <span><strong>Educator Governance:</strong> Full  role hierarchy with student progress analytics and assessment management.</span>
                 </li>
               </ul>
             </div>
