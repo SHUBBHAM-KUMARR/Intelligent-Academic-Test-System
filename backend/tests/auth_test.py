@@ -396,7 +396,7 @@ def test_generate_token_structure(app):
     user = UserModel(id=55, name="Token Test", email="token@test.com", role="admin")
     secret_key = app.config.get("SECRET_KEY")
 
-    token = generate_token(user, expires_in_days=3)
+    token = generate_token(user)
     decoded = jwt.decode(token, secret_key, algorithms=["HS256"])
 
     assert decoded["sub"] == "55"
