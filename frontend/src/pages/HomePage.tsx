@@ -117,12 +117,12 @@ export const HomePage: React.FC = () => {
   const [calibrationScore, setCalibrationScore] = useState<number>(78);
 
   // Live Test Generator State (Backend API)
-  const [genSubject, setGenSubject] = useState<string>();
-  const [genTopic, setGenTopic] = useState<string>();
+const [genSubject, setGenSubject] = useState<string>("Computer Science");
+  const [genTopic, setGenTopic] = useState<string>("Divide and Conquer");
   const [genDifficulty, setGenDifficulty] = useState<string>("medium");
   const [genNumQuestions, setGenNumQuestions] = useState<number>(3);
   const [genSourceMaterial, setGenSourceMaterial] = useState<string>(
-   
+    "S §4.5: The master method provides an asymptotic cookbook recipe for solving algorithmic recurrences of the form T(n) = aT(n/b) + f(n)."
   );
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [generateError, setGenerateError] = useState<string | null>(null);
