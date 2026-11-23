@@ -20,5 +20,5 @@ class AdminSchema(Schema):
     role = fields.Str(
         load_default="admin",
         dump_default="admin",
-        validate=validate.OneOf(["admin", "superadmin"])
+        validate=validate.OneOf(["admin"])
     )
