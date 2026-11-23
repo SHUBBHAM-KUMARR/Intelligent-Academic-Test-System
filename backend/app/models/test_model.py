@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from app.extensions import db
 
 
@@ -22,11 +23,11 @@ class TestModel(db.Model):
     status = db.Column(db.String(20), default="published", nullable=False)
     questions = db.Column(db.JSON, nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(ZoneInfo('Asia/Kolkata')), nullable=False)
     updated_at = db.Column(
         db.DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.now(ZoneInfo('Asia/Kolkata')),
+        onupdate=lambda: datetime.now(ZoneInfo('Asia/Kolkata'))
     )
 
     def __init__(
@@ -101,7 +102,7 @@ class SubmissionModel(db.Model):
     answers = db.Column(db.JSON, nullable=False)
     evaluations = db.Column(db.JSON, nullable=True)
     passed = db.Column(db.Boolean, default=False, nullable=False)
-    submitted_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    submitted_at = db.Column(db.DateTime, default=lambda: datetime.now(ZoneInfo('Asia/Kolkata')), nullable=False)
 
     def __init__(
         self,
