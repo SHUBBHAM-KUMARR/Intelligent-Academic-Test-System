@@ -139,7 +139,7 @@ const [genSubject, setGenSubject] = useState<string>("Computer Science");
   const [isExplaining, setIsExplaining] = useState<boolean>(false);
 
   // Source Grounding Ingestion State (POST /api/v1/source/upload)
-  const [groundTitle, setGroundTitle] = useState<string>("Algorithm Analysis Lecture Notes");
+  const [groundTitle, setGroundTitle] = useState<string>("Algorithm Analysis Lecture Notes",);
   const [groundSubject, setGroundSubject] = useState<string>("Computer Science");
   const [groundText, setGroundText] = useState<string>(
     "Section 1.1: Foundations of Algorithmic Complexity.\n" +
