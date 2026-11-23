@@ -1,3 +1,4 @@
+from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.extensions import db
@@ -10,11 +11,11 @@ class UserModel(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default="student", nullable=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(ZoneInfo('Asia/Kolkata')), nullable=False)
     updated_at = db.Column(
         db.DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.now(ZoneInfo('Asia/Kolkata')),
+        onupdate=lambda: datetime.now(ZoneInfo('Asia/Kolkata'))
     )
 
     def __init__(self, name: str = None, email: str = None, password: str = None, role: str = "student", id: int = None, **kwargs):
