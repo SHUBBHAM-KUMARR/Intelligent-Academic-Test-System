@@ -1302,7 +1302,7 @@ export const HomePage: React.FC = () => {
               Educators upload course material (PDFs, PPT slides, notes, or chapter references). The ingestion module vectorizes text while preserving hierarchical section metadata.
             </p>
             <div className="bg-[#FAF9F6] p-3.5 rounded-xl border border-[#DDD7CC] font-mono text-[11px] text-[#4B5260] space-y-1">
-              <div>&gt; POST /api/v1/source/upload</div>
+              
               <div className="text-[#1E3A2F] font-semibold">&gt; Parsed: 342 chunks indexed</div>
               <div>&gt; Status: 100% Grounded</div>
             </div>
@@ -1315,7 +1315,7 @@ export const HomePage: React.FC = () => {
               Specify Bloom’s Taxonomy depth (Recall, Analysis, Synthesis) and question composition. Every question is verified against citation ground truth via Groq Llama 3.3.
             </p>
             <div className="bg-[#FAF9F6] p-3.5 rounded-xl border border-[#DDD7CC] font-mono text-[11px] text-[#4B5260] space-y-1">
-              <div>&gt; POST /api/v1/test/generate</div>
+        
               <div className="text-[#1E3A2F] font-semibold">&gt; Generated 25 questions</div>
               <div>&gt; Rubric matrix compiled</div>
             </div>
@@ -1328,7 +1328,7 @@ export const HomePage: React.FC = () => {
               Students take the test. Question difficulty continuously calibrates to response accuracy. Instant automated rubric scores provide precise diagnostic remediation.
             </p>
             <div className="bg-[#FAF9F6] p-3.5 rounded-xl border border-[#DDD7CC] font-mono text-[11px] text-[#4B5260] space-y-1">
-              <div>&gt; POST /api/v1/test/submit</div>
+            
               <div className="text-[#1E3A2F] font-semibold">&gt; Score: Calibrated 88/100</div>
               <div>&gt; Remediation report dispatched</div>
             </div>
@@ -1399,85 +1399,6 @@ export const HomePage: React.FC = () => {
                   <span><strong>Educator Governance:</strong> Full  role hierarchy with student progress analytics and assessment management.</span>
                 </li>
               </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Architecture Overview Section */}
-      <section id="architecture" className="relative z-10 py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#DDD7CC] text-left">
-        <div className="max-w-2xl mb-12">
-          <span className="text-xs font-mono uppercase tracking-widest text-[#1E3A2F] font-semibold mb-2 block">
-            Technical Stack
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-normal font-['Newsreader',serif] text-[#18191B] mb-3">
-            Built for security, speed, and clean separation.
-          </h2>
-          <p className="text-sm sm:text-base text-[#575C66]">
-            Modular Flask REST API backend paired with a high-performance React 19 + TypeScript frontend.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono text-xs">
-          <div className="p-6 rounded-2xl bg-[#FFFFFF] border border-[#DDD7CC]">
-            <div className="text-[#1E3A2F] text-sm font-semibold mb-3 flex items-center justify-between">
-              <span>Backend Architecture</span>
-              <span className="text-[10px] text-[#5E6472] bg-[#F3EFE7] px-2 py-0.5 rounded border border-[#DDD7CC]">Python / Flask 3</span>
-            </div>
-            <div className="space-y-2 text-[#4E5462]">
-              <div className="flex justify-between border-b border-[#ECE7DE] pb-1.5">
-                <span>API Gateway:</span>
-                <span className="text-[#18191B] font-semibold">Flask v3 + Blueprints (v1)</span>
-              </div>
-              <div className="flex justify-between border-b border-[#ECE7DE] pb-1.5">
-                <span>AI Agent Engine:</span>
-                <span className="text-[#18191B] font-semibold">Groq Free Tier (Llama 3.3 70B)</span>
-              </div>
-              <div className="flex justify-between border-b border-[#ECE7DE] pb-1.5">
-                <span>Database ORM:</span>
-                <span className="text-[#18191B] font-semibold">Flask-SQLAlchemy + SQLite / MySQL</span>
-              </div>
-              <div className="flex justify-between border-b border-[#ECE7DE] pb-1.5">
-                <span>Serialization:</span>
-                <span className="text-[#18191B] font-semibold">Marshmallow Schemas</span>
-              </div>
-              <div className="flex justify-between border-b border-[#ECE7DE] pb-1.5">
-                <span>Authentication:</span>
-                <span className="text-[#18191B] font-semibold">PyJWT (Bearer Token RBAC)</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Test Suite:</span>
-                <span className="text-[#18191B] font-semibold">PyTest (65 Automated Tests Passing)</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-[#FFFFFF] border border-[#DDD7CC]">
-            <div className="text-[#1E3A2F] text-sm font-semibold mb-3 flex items-center justify-between">
-              <span>Frontend Architecture</span>
-              <span className="text-[10px] text-[#5E6472] bg-[#F3EFE7] px-2 py-0.5 rounded border border-[#DDD7CC]">React 19 / Vite 8</span>
-            </div>
-            <div className="space-y-2 text-[#4E5462]">
-              <div className="flex justify-between border-b border-[#ECE7DE] pb-1.5">
-                <span>UI Framework:</span>
-                <span className="text-[#18191B] font-semibold">React 19 + TypeScript</span>
-              </div>
-              <div className="flex justify-between border-b border-[#ECE7DE] pb-1.5">
-                <span>Build Tool:</span>
-                <span className="text-[#18191B] font-semibold">Vite 8</span>
-              </div>
-              <div className="flex justify-between border-b border-[#ECE7DE] pb-1.5">
-                <span>Styling Engine:</span>
-                <span className="text-[#18191B] font-semibold">Tailwind CSS (Mild Light · 0 Gradient)</span>
-              </div>
-              <div className="flex justify-between border-b border-[#ECE7DE] pb-1.5">
-                <span>HTTP Client:</span>
-                <span className="text-[#18191B] font-semibold">Axios Service Integration</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Typography:</span>
-                <span className="text-[#18191B] font-semibold">Newsreader Serif + Plus Jakarta Sans</span>
-              </div>
             </div>
           </div>
         </div>
