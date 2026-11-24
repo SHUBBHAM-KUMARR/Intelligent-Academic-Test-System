@@ -802,9 +802,7 @@ const [genSubject, setGenSubject] = useState<string>("Computer Science");
                     </div>
 
                     <div className="pt-2 flex items-center justify-between">
-                      <span className="text-xs text-[#717886] font-mono">
-                        Fallback to offline generation if API key is not yet set.
-                      </span>
+                    
 
                       <button
                         type="submit"
