@@ -8,6 +8,7 @@ from app.services.agent_service.prompts import (
     SUBJECTIVE_EVALUATION_PROMPT,
     CONCEPT_EXPLANATION_PROMPT,
 )
+from app.services.agent_service.validation_service import QuestionValidationService
 from app.services.test_service import get_level_handler, LevelTest
 
 logger = logging.getLogger(__name__)
@@ -15,17 +16,23 @@ logger = logging.getLogger(__name__)
 
 class AcademicAgent:
     """
-    AI Academic Agent powered by Groq Free Tier (Llama 3.3 70B / Llama 3.1 8B).
+    AI Academic Agent powered by Groq Free Tier (openai/gpt-oss-120b).
     
     Coordinates:
     - Source-grounded test generation across Bloom's Taxonomy tiers
+    - Quality assurance & validation service remediating irrelevant/placeholder options
     - Subjective (essay/short answer) evaluation against rubrics
     - Real-time cognitive tutoring & misconception remediation
     - Deterministic offline fallback if the Groq API key is unconfigured
     """
 
-    def __init__(self, client: Optional[GroqClient] = None):
+    def __init__(
+        self,
+        client: Optional[GroqClient] = None,
+        validation_service: Optional[QuestionValidationService] = None,
+    ):
         self.client = client or GroqClient()
+        self.validation_service = validation_service or QuestionValidationService(client=self.client)
 
     @property
     def is_ai_ready(self) -> bool:
@@ -40,14 +47,15 @@ class AcademicAgent:
         num_questions: int = 5,
         source_material: Optional[str] = None,
         question_types: Optional[List[str]] = None,
+        skip_validation: bool = False,
     ) -> List[Dict[str, Any]]:
         """
-        Generate an academic test grounded in the provided source material.
-        
-        If Groq is configured, calls Llama 3.3 on Groq; otherwise uses
-        deterministic offline academic question synthesis.
+        Generate an academic test grounded in the provided source material,
+        then validate and remediate questions and options to eliminate placeholders
+        and ensure correct answer placement across random [A, B, C, D] options.
         """
         level_handler: LevelTest = get_level_handler(difficulty)
+        raw_questions: List[Dict[str, Any]] = []
 
         if self.is_ai_ready:
             try:
@@ -60,7 +68,7 @@ class AcademicAgent:
                         max_tokens=4096,
                     )
 
-                return level_handler.generate(
+                raw_questions = level_handler.generate(
                     subject=subject,
                     topic=topic,
                     source_material=source_material,
@@ -73,14 +81,45 @@ class AcademicAgent:
                     f"Groq generation encountered an error: {e}. "
                     "Falling back to deterministic offline question synthesis."
                 )
+                raw_questions = []
 
-        # Fallback to offline generation
-        return level_handler.generate_offline_questions(
+        if not raw_questions:
+            # Fallback to offline generation
+            raw_questions = level_handler.generate_offline_questions(
+                subject=subject,
+                topic=topic,
+                source_material=source_material,
+                num_questions=num_questions,
+                question_types=question_types,
+            )
+
+        if skip_validation:
+            return raw_questions
+
+        # Validation Service: Audit questions & options, remediate if wrong, place answer randomly among [A, B, C, D]
+        return self.validation_service.validate_test(
+            questions=raw_questions,
             subject=subject,
             topic=topic,
+            difficulty=difficulty,
             source_material=source_material,
-            num_questions=num_questions,
-            question_types=question_types,
+        )
+
+    def validate_test(
+        self,
+        questions: List[Dict[str, Any]],
+        subject: str,
+        topic: str,
+        difficulty: str = "medium",
+        source_material: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """Audit and validate academic questions, remediating invalid or placeholder options."""
+        return self.validation_service.validate_test(
+            questions=questions,
+            subject=subject,
+            topic=topic,
+            difficulty=difficulty,
+            source_material=source_material,
         )
 
     def evaluate_subjective_answer(

@@ -167,6 +167,19 @@ export const api = {
     return res.data;
   },
 
+  // 1b. Audit & validate test questions, remediating invalid or placeholder options
+  validateQuestions: async (payload: {
+    subject: string;
+    topic: string;
+    difficulty?: string;
+    questions: QuestionData[];
+    source_material?: string;
+  }): Promise<{ message: string; count: number; questions: QuestionData[] }> => {
+    const res = await axios.post(`${API_BASE}/api/v1/test/validate`, payload);
+    return res.data;
+  },
+
+
   // 2. Fetch a test by ID
   getTest: async (testId: number, mode?: "take" | "review"): Promise<{ test: TestData }> => {
     const url = mode ? `${API_BASE}/api/v1/test/${testId}?mode=${mode}` : `${API_BASE}/api/v1/test/${testId}`;

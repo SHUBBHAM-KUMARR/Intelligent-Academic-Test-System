@@ -146,6 +146,39 @@ class TestController:
             return jsonify({"error": "Failed to generate test", "details": str(e)}), 500
 
     @staticmethod
+    def validate_questions():
+        """
+        Validate and remediate questions and options in a test.
+        If questions/options are irrelevant, misconceptual, or have placeholders,
+        replaces the options with the correct answer placed at a random slot among [A, B, C, D].
+        POST /api/v1/test/validate
+        """
+        data = request.get_json(silent=True) or {}
+        questions = data.get("questions")
+        if not questions or not isinstance(questions, list):
+            return jsonify({"error": "Missing or invalid 'questions' list in request body"}), 400
+
+        subject = data.get("subject", "General Academic")
+        topic = data.get("topic", "General")
+        difficulty = data.get("difficulty", "medium")
+        source_material = data.get("source_material")
+
+        agent = get_academic_agent()
+        validated = agent.validate_test(
+            questions=questions,
+            subject=subject,
+            topic=topic,
+            difficulty=difficulty,
+            source_material=source_material,
+        )
+
+        return jsonify({
+            "message": "Questions audited and validated successfully",
+            "count": len(validated),
+            "questions": validated,
+        }), 200
+
+    @staticmethod
     def get_test(test_id: int):
         """
         Fetch test by ID.

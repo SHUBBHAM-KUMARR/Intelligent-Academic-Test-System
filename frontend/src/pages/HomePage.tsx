@@ -444,7 +444,7 @@ const [genSubject, setGenSubject] = useState<string>("Computer Science");
                 <div className="w-3 h-3 rounded-full bg-[#D6D0C4]" />
               </div>
               <span className="text-xs font-mono text-[#6A707E] tracking-wide ml-2">
-                IATS // Adaptive Assessment Engine ·
+                IATS - Adaptive Assessment Engine ·
               </span>
             </div>
 

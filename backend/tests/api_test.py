@@ -375,3 +375,47 @@ def test_admin_dashboard_endpoints(client, sample_test, app):
     assert len(data_subs["submissions"]) == 1
     assert data_subs["submissions"][0]["test"]["title"] == "Algorithms Midterm"
 
+
+# ============================================================================
+# 8. Test Validation Endpoint Tests (/api/v1/test/validate)
+# ============================================================================
+
+def test_validate_endpoint_remediates_placeholder_options(client):
+    """Test POST /api/v1/test/validate remediates placeholder questions."""
+    payload = {
+        "subject": "Computer Science",
+        "topic": "Dynamic Programming",
+        "difficulty": "medium",
+        "questions": [
+            {
+                "id": 1,
+                "text": "What is the primary formulation of Dynamic Programming?",
+                "type": "mcq",
+                "options": [
+                    "Correct standard formulation under Dynamic Programming",
+                    "Plausible alternative violating boundary conditions",
+                    "Unrelated conceptual distractor often confused with topic",
+                    "Inverted reciprocal proposition of principle"
+                ],
+                "correct_index": 0,
+                "points": 1.0,
+                "difficulty": "medium"
+            }
+        ]
+    }
+
+    res = client.post("/api/v1/test/validate", json=payload)
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["count"] == 1
+    remediated_q = data["questions"][0]
+
+    # Must have 4 options and valid correct_index
+    assert len(remediated_q["options"]) == 4
+    assert remediated_q["correct_index"] in [0, 1, 2, 3]
+
+    # Selected correct option must be genuine academic content
+    chosen_opt = remediated_q["options"][remediated_q["correct_index"]]
+    assert "optimal substructure" in chosen_opt.lower() or "overlapping subproblems" in chosen_opt.lower()
+
+

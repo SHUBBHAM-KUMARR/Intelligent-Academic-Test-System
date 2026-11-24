@@ -10,6 +10,13 @@ def generate():
     return TestController.generate()
 
 
+@test_bp.route("/validate", methods=["POST"])
+def validate():
+    """Audit and validate academic questions, remediating invalid or placeholder options."""
+    return TestController.validate_questions()
+
+
+
 @test_bp.route("/", methods=["GET"])
 @test_bp.route("/list", methods=["GET"])
 def list_tests():

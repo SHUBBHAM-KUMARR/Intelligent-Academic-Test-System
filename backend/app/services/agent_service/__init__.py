@@ -11,6 +11,12 @@ from app.services.agent_service.prompts import (
     ACADEMIC_AGENT_SYSTEM_PROMPT,
     SUBJECTIVE_EVALUATION_PROMPT,
     CONCEPT_EXPLANATION_PROMPT,
+    QUESTION_VALIDATION_SYSTEM_PROMPT,
+    QUESTION_VALIDATION_PROMPT,
+    BATCH_QUESTION_VALIDATION_PROMPT,
+)
+from app.services.agent_service.validation_service import (
+    QuestionValidationService,
 )
 
 __all__ = [
@@ -22,4 +28,9 @@ __all__ = [
     "ACADEMIC_AGENT_SYSTEM_PROMPT",
     "SUBJECTIVE_EVALUATION_PROMPT",
     "CONCEPT_EXPLANATION_PROMPT",
+    "QUESTION_VALIDATION_SYSTEM_PROMPT",
+    "QUESTION_VALIDATION_PROMPT",
+    "BATCH_QUESTION_VALIDATION_PROMPT",
+    "QuestionValidationService",
 ]
+
