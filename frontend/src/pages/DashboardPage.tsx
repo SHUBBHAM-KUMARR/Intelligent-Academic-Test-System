@@ -1045,11 +1045,7 @@ export const DashboardPage: React.FC = () => {
           <GraduationCapIcon size={14} className="text-[#1E3A2F]" />
           <span>IATS Intelligent Academic Testing System &copy; 2026</span>
         </div>
-        <div className="flex items-center gap-4 mt-2 sm:mt-0 font-mono text-[11px]">
-          <span>Quiet Luxury Editorial UI</span>
-          <span>•</span>
-          <span>100% Solid Hex Tokens</span>
-        </div>
+    
       </footer>
     </div>
   );
