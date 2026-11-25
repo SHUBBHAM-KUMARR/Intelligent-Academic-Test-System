@@ -542,9 +542,9 @@ export const TestsPage: React.FC = () => {
                       className="px-3 py-1.5 text-xs rounded-full bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F] transition-colors"
                     >
                       <option value="all">All Difficulties</option>
-                      <option value="easy">Easy (Bloom I-II)</option>
-                      <option value="medium">Medium (Bloom III-IV)</option>
-                      <option value="hard">Hard (Bloom V-VI)</option>
+                      <option value="easy">Easy </option>
+                      <option value="medium">Medium </option>
+                      <option value="hard">Hard </option>
                       <option value="adaptive">Adaptive</option>
                     </select>
 
@@ -656,10 +656,7 @@ export const TestsPage: React.FC = () => {
             {hubTab === "synthesize" && (
               <div className="bg-[#FFFFFF] rounded-3xl border border-[#DDD7CC] p-6 sm:p-8 shadow-[0_2px_8px_rgba(0,0,0,0.02)] max-w-3xl mx-auto">
                 <div className="mb-6 pb-4 border-b border-[#ECE7DE]">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#EBF3EE] border border-[#CDE1D4] text-[10px] font-mono uppercase text-[#1E3A2F] mb-2">
-                    <SparklesIcon size={12} />
-                    <span>Llama 3.3 70B & Bloom Cognitive Synthesizer</span>
-                  </div>
+                 
                   <h2 className="text-2xl font-normal font-['Newsreader',serif] text-[#18191B]">
                     Synthesize Source-Grounded Assessment
                   </h2>
@@ -687,10 +684,12 @@ export const TestsPage: React.FC = () => {
                         className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F]"
                       >
                         <option value="Computer Science">Computer Science</option>
-                        <option value="Economics">Economics</option>
-                        <option value="Life Sciences">Life Sciences</option>
+                        <option value="Programming coding problems">Snippets</option>
+                        
                         <option value="Mathematics">Mathematics</option>
-                        <option value="Physics">Physics</option>
+                        <option value="English">English</option>
+                        <option value="Science">Science</option>
+                         
                       </select>
                     </div>
 
@@ -719,10 +718,10 @@ export const TestsPage: React.FC = () => {
                         onChange={(e) => setSynthDifficulty(e.target.value)}
                         className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] focus:outline-none focus:border-[#1E3A2F]"
                       >
-                        <option value="easy">Easy (Bloom I-II: Remember/Understand)</option>
-                        <option value="medium">Medium (Bloom III-IV: Apply/Analyze)</option>
-                        <option value="hard">Hard (Bloom V-VI: Evaluate/Create)</option>
-                        <option value="adaptive">Adaptive (Dynamic Calibration)</option>
+                        <option value="easy">Easy </option>
+                        <option value="medium">Medium </option>
+                        <option value="hard">Hard </option>
+                        <option value="adaptive"></option>
                       </select>
                     </div>
 
