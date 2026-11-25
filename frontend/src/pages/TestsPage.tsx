@@ -3,6 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ConceptRemediationCard } from "../components/ConceptRemediationCard";
 import {
+  CodePanel,
+  FormattedInlineText,
+  FormattedQuestionPrompt,
+} from "../components/QuestionCodeView";
+import { parseQuestionContent } from "../utils/questionParser";
+import {
   api,
   type TestData,
   type QuestionData,
@@ -29,6 +35,7 @@ import {
   CheckIcon,
   FileTextIcon,
   XIcon,
+  CodeIcon,
 } from "../components/Icons";
 
 export const TestsPage: React.FC = () => {
@@ -327,9 +334,19 @@ export const TestsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-[#18191B] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-[#EBF3EE] selection:text-[#1E3A2F] flex flex-col justify-between">
+    <div
+      className={`bg-[#FAF9F6] text-[#18191B] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-[#EBF3EE] selection:text-[#1E3A2F] flex flex-col ${
+        viewMode === "active-test"
+          ? "min-h-screen lg:h-screen lg:overflow-hidden"
+          : "min-h-screen justify-between"
+      }`}
+    >
       {/* Top Floating Navigation Capsule */}
-      <header className="sticky top-0 z-50 py-3.5 px-4 sm:px-6">
+      <header
+        className={`sticky top-0 z-50 px-4 sm:px-6 shrink-0 ${
+          viewMode === "active-test" ? "py-2.5" : "py-3.5"
+        }`}
+      >
         <div className="max-w-7xl mx-auto">
           <nav className="flex items-center justify-between px-5 sm:px-7 py-3 rounded-full bg-[#FFFFFF]/95 backdrop-blur-md border border-[#DDD7CC] shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
             {/* Logo */}
@@ -406,7 +423,13 @@ export const TestsPage: React.FC = () => {
       </header>
 
       {/* Main Content Area */}
-      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1">
+      <main
+        className={`w-full max-w-7xl mx-auto px-4 sm:px-6 flex-1 ${
+          viewMode === "active-test"
+            ? "py-2 sm:py-3 min-h-0 flex flex-col"
+            : "py-6 sm:py-8"
+        }`}
+      >
         {/* ================================================================== */}
         {/* VIEW 1: ASSESSMENT HUB (BROWSE, SYNTHESIZE, GROUNDING) */}
         {/* ================================================================== */}
@@ -1054,186 +1077,235 @@ export const TestsPage: React.FC = () => {
         {/* ================================================================== */}
         {/* VIEW 2: ACTIVE TEST RUNNER */}
         {/* ================================================================== */}
-        {viewMode === "active-test" && activeTest && (
-          <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-200">
-            {/* Top Assessment Status Bar */}
-            <div className="bg-[#FFFFFF] rounded-2xl border border-[#DDD7CC] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#EBF3EE] border border-[#CDE1D4] text-[#1E3A2F] font-semibold">
-                    {activeTest.subject}
+        {viewMode === "active-test" && activeTest && activeTest.questions.length > 0 && (() => {
+          const currentQ = activeTest.questions[currentQuestionIndex] || activeTest.questions[0];
+          const totalQ = activeTest.questions.length;
+          const selectedOpt = selectedAnswers[currentQuestionIndex];
+          const answeredCount = Object.keys(selectedAnswers).length;
+          const parsedQuestion = parseQuestionContent(
+            currentQ.text,
+            currentQ.code,
+            currentQ.code_language
+          );
+
+          const questionPanel = (
+            <div className="bg-[#FFFFFF] rounded-3xl border border-[#DDD7CC] shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col h-full min-h-0 overflow-hidden">
+              {/* Fixed Question Header */}
+              <div className="shrink-0 px-5 sm:px-6 py-3.5 border-b border-[#ECE7DE] flex items-center justify-between gap-2 text-xs font-mono">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-[#1E3A2F] uppercase">
+                    Question {currentQuestionIndex + 1} of {totalQ}
                   </span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#F7F5EF] border border-[#DDD7CC] text-[#575C66]">
-                    {activeTest.difficulty}
-                  </span>
-                </div>
-                <h2 className="text-xl font-normal font-['Newsreader',serif] text-[#18191B]">
-                  {activeTest.title}
-                </h2>
-              </div>
-
-              <div className="flex items-center gap-4 self-end sm:self-center font-mono">
-                {/* Timer Badge */}
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F7F5EF] border border-[#E4DFD5] text-xs font-semibold text-[#18191B]">
-                  <ClockIcon size={14} className="text-[#1E3A2F]" />
-                  <span>{formatTimer(testTimeRemaining)}</span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (window.confirm("Are you sure you want to exit? Your answers will not be saved.")) {
-                      setViewMode("hub");
-                    }
-                  }}
-                  className="text-xs text-[#666C7A] hover:text-[#991B1B] transition-colors"
-                >
-                  Exit Test
-                </button>
-              </div>
-            </div>
-
-            {/* Question Display Card */}
-            {(() => {
-              const currentQ = activeTest.questions[currentQuestionIndex];
-              const totalQ = activeTest.questions.length;
-              const selectedOpt = selectedAnswers[currentQuestionIndex];
-
-              return (
-                <div className="bg-[#FFFFFF] rounded-3xl border border-[#DDD7CC] p-6 sm:p-8 shadow-[0_2px_8px_rgba(0,0,0,0.02)] space-y-6">
-                  {/* Question Header */}
-                  <div className="flex items-center justify-between pb-4 border-b border-[#ECE7DE] text-xs font-mono">
-                    <span className="font-semibold text-[#1E3A2F] uppercase">
-                      Question {currentQuestionIndex + 1} of {totalQ}
+                  {parsedQuestion.hasCode && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EBF3EE] border border-[#CDE1D4] text-[#1E3A2F] text-[10px] font-semibold uppercase">
+                      <CodeIcon size={11} />
+                      <span>Coding</span>
                     </span>
-                    {currentQ.bloom_level && (
-                      <span className="px-2 py-0.5 rounded bg-[#F7F5EF] border border-[#E4DFD5] text-[#575C66]">
-                        {currentQ.bloom_level}
-                      </span>
-                    )}
-                  </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {currentQ.bloom_level && (
+                    <span className="px-2 py-0.5 rounded bg-[#F7F5EF] border border-[#E4DFD5] text-[#575C66]">
+                      {currentQ.bloom_level}
+                    </span>
+                  )}
+                  {currentQ.points !== undefined && (
+                    <span className="px-2 py-0.5 rounded bg-[#F7F5EF] border border-[#E4DFD5] text-[#18191B] font-semibold">
+                      {currentQ.points} pts
+                    </span>
+                  )}
+                </div>
+              </div>
 
-                  {/* Question Prompt */}
-                  <div>
-                    <h3 className="text-lg sm:text-xl font-normal font-['Newsreader',serif] text-[#18191B] leading-relaxed">
-                      {currentQ.text}
-                    </h3>
-                  </div>
+              {/* Scrollable Question Prompt & Options */}
+              <div className="flex-1 min-h-0 overflow-y-auto px-5 sm:px-6 py-4 space-y-4">
+                <FormattedQuestionPrompt text={parsedQuestion.promptText} />
 
-                  {/* Options List */}
-                  <div className="space-y-2.5 pt-2">
-                    {currentQ.options.map((opt, optIdx) => {
-                      const isSelected = selectedOpt === optIdx;
-                      const optionLetter = String.fromCharCode(65 + optIdx);
+                <div className="space-y-2 pt-1">
+                  {currentQ.options.map((opt, optIdx) => {
+                    const isSelected = selectedOpt === optIdx;
+                    const optionLetter = String.fromCharCode(65 + optIdx);
 
-                      return (
-                        <div
-                          key={optIdx}
-                          onClick={() =>
-                            setSelectedAnswers((prev) => ({
-                              ...prev,
-                              [currentQuestionIndex]: optIdx,
-                            }))
-                          }
-                          className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${isSelected
+                    return (
+                      <div
+                        key={optIdx}
+                        onClick={() =>
+                          setSelectedAnswers((prev) => ({
+                            ...prev,
+                            [currentQuestionIndex]: optIdx,
+                          }))
+                        }
+                        className={`px-4 py-3 rounded-2xl border cursor-pointer transition-all flex items-center justify-between gap-3 ${
+                          isSelected
                             ? "bg-[#EBF3EE] border-[#1E3A2F] text-[#18191B] shadow-sm"
                             : "bg-[#FFFFFF] hover:bg-[#F7F5EF] border-[#E4DFD5] text-[#18191B]"
-                            }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span
-                              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-semibold border ${isSelected
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span
+                            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-semibold border shrink-0 ${
+                              isSelected
                                 ? "bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F]"
                                 : "bg-[#F7F5EF] text-[#575C66] border-[#DDD7CC]"
-                                }`}
-                            >
-                              {optionLetter}
-                            </span>
-                            <span className="text-sm font-medium leading-relaxed">{opt}</span>
-                          </div>
-
-                          {isSelected && (
-                            <div className="w-5 h-5 rounded-full bg-[#1E3A2F] text-[#FAF9F6] flex items-center justify-center shrink-0">
-                              <CheckIcon size={12} />
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Navigation / Actions Bar */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-6 border-t border-[#ECE7DE]">
-                    {/* Pagination Pills */}
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      {activeTest.questions.map((_, idx) => {
-                        const isAnswered = selectedAnswers[idx] !== undefined;
-                        const isCurrent = idx === currentQuestionIndex;
-
-                        return (
-                          <button
-                            key={idx}
-                            type="button"
-                            onClick={() => setCurrentQuestionIndex(idx)}
-                            className={`w-7 h-7 rounded-full text-xs font-mono transition-all ${isCurrent
-                              ? "bg-[#EBF3EE] text-[#1E3A2F] font-bold border-2 border-[#1E3A2F]"
-                              : isAnswered
-                                ? "bg-[#1E3A2F] text-[#FAF9F6] font-semibold"
-                                : "bg-[#F7F5EF] text-[#666C7A] border border-[#DDD7CC]"
-                              }`}
+                            }`}
                           >
-                            {idx + 1}
-                          </button>
-                        );
-                      })}
-                    </div>
+                            {optionLetter}
+                          </span>
+                          <span className="text-sm font-medium leading-relaxed break-words">
+                            <FormattedInlineText text={opt} />
+                          </span>
+                        </div>
 
-                    <div className="flex items-center gap-2.5">
+                        {isSelected && (
+                          <div className="w-5 h-5 rounded-full bg-[#1E3A2F] text-[#FAF9F6] flex items-center justify-center shrink-0">
+                            <CheckIcon size={12} />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Fixed Bottom Navigation / Actions Bar */}
+              <div className="shrink-0 px-5 sm:px-6 py-3 border-t border-[#ECE7DE] bg-[#FAF9F6]/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                {/* Pagination Pills */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {activeTest.questions.map((_, idx) => {
+                    const isAnswered = selectedAnswers[idx] !== undefined;
+                    const isCurrent = idx === currentQuestionIndex;
+
+                    return (
                       <button
+                        key={idx}
                         type="button"
-                        onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
-                        disabled={currentQuestionIndex === 0}
-                        className="px-4 py-2 rounded-full bg-[#FFFFFF] border border-[#DDD7CC] hover:bg-[#F7F5EF] text-xs font-medium text-[#18191B] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        onClick={() => setCurrentQuestionIndex(idx)}
+                        className={`w-7 h-7 rounded-full text-xs font-mono transition-all ${
+                          isCurrent
+                            ? "bg-[#EBF3EE] text-[#1E3A2F] font-bold border-2 border-[#1E3A2F]"
+                            : isAnswered
+                              ? "bg-[#1E3A2F] text-[#FAF9F6] font-semibold"
+                              : "bg-[#F7F5EF] text-[#666C7A] border border-[#DDD7CC]"
+                        }`}
                       >
-                        Previous
+                        {idx + 1}
                       </button>
+                    );
+                  })}
+                </div>
 
-                      {currentQuestionIndex < totalQ - 1 ? (
-                        <button
-                          type="button"
-                          onClick={() => setCurrentQuestionIndex((prev) => Math.min(totalQ - 1, prev + 1))}
-                          className="px-5 py-2 rounded-full bg-[#1E3A2F] text-[#FAF9F6] hover:bg-[#162C23] text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
-                        >
-                          <span>Next Question</span>
-                          <ArrowRightIcon size={13} />
-                        </button>
+                <div className="flex items-center gap-2.5 self-end sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
+                    disabled={currentQuestionIndex === 0}
+                    className="px-4 py-2 rounded-full bg-[#FFFFFF] border border-[#DDD7CC] hover:bg-[#F7F5EF] text-xs font-medium text-[#18191B] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Previous
+                  </button>
+
+                  {currentQuestionIndex < totalQ - 1 ? (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentQuestionIndex((prev) => Math.min(totalQ - 1, prev + 1))}
+                      className="px-5 py-2 rounded-full bg-[#1E3A2F] text-[#FAF9F6] hover:bg-[#162C23] text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
+                    >
+                      <span>Next Question</span>
+                      <ArrowRightIcon size={13} />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleSubmitAssessment}
+                      disabled={isSubmittingTest}
+                      className="px-6 py-2 rounded-full bg-[#2D734E] text-[#FAF9F6] hover:bg-[#23583C] text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
+                    >
+                      {isSubmittingTest ? (
+                        <>
+                          <RefreshIcon size={14} className="animate-spin" />
+                          <span>Evaluating Rubrics...</span>
+                        </>
                       ) : (
-                        <button
-                          type="button"
-                          onClick={handleSubmitAssessment}
-                          disabled={isSubmittingTest}
-                          className="px-6 py-2 rounded-full bg-[#2D734E] text-[#FAF9F6] hover:bg-[#23583C] text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
-                        >
-                          {isSubmittingTest ? (
-                            <>
-                              <RefreshIcon size={14} className="animate-spin" />
-                              <span>Evaluating Rubrics...</span>
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircleIcon size={14} />
-                              <span>Submit Assessment</span>
-                            </>
-                          )}
-                        </button>
+                        <>
+                          <CheckCircleIcon size={14} />
+                          <span>Submit Assessment</span>
+                        </>
                       )}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+
+          return (
+            <div
+              className={`w-full mx-auto flex-1 min-h-0 flex flex-col gap-3 animate-in fade-in duration-200 ${
+                parsedQuestion.hasCode ? "max-w-7xl" : "max-w-4xl"
+              }`}
+            >
+              {/* Top Assessment Status Bar */}
+              <div className="shrink-0 bg-[#FFFFFF] rounded-2xl border border-[#DDD7CC] px-4 py-2.5 sm:px-5 sm:py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#EBF3EE] border border-[#CDE1D4] text-[#1E3A2F] font-semibold">
+                      {activeTest.subject}
+                    </span>
+                    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#F7F5EF] border border-[#DDD7CC] text-[#575C66]">
+                      {activeTest.difficulty}
+                    </span>
+                    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#F7F5EF] border border-[#E4DFD5] text-[#666C7A]">
+                      {answeredCount}/{totalQ} Answered
+                    </span>
+                  </div>
+                  <h2 className="text-base sm:text-lg font-normal font-['Newsreader',serif] text-[#18191B] truncate">
+                    {activeTest.title}
+                  </h2>
+                </div>
+
+                <div className="flex items-center gap-3 self-end sm:self-center font-mono shrink-0">
+                  {/* Timer Badge */}
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F7F5EF] border border-[#E4DFD5] text-xs font-semibold text-[#18191B]">
+                    <ClockIcon size={14} className="text-[#1E3A2F]" />
+                    <span>{formatTimer(testTimeRemaining)}</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm("Are you sure you want to exit? Your answers will not be saved.")) {
+                        setViewMode("hub");
+                      }
+                    }}
+                    className="text-xs text-[#666C7A] hover:text-[#991B1B] transition-colors"
+                  >
+                    Exit Test
+                  </button>
+                </div>
+              </div>
+
+              {/* Fixed-Size Runner Body */}
+              <div className="flex-1 min-h-0">
+                {parsedQuestion.hasCode ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-full min-h-0">
+                    <div className="lg:col-span-6 h-[300px] sm:h-[340px] lg:h-full min-h-0 flex flex-col">
+                      <CodePanel
+                        key={currentQuestionIndex}
+                        codeBlocks={parsedQuestion.codeBlocks}
+                        className="h-full"
+                      />
+                    </div>
+                    <div className="lg:col-span-6 h-full min-h-0 flex flex-col">
+                      {questionPanel}
                     </div>
                   </div>
-                </div>
-              );
-            })()}
-          </div>
-        )}
+                ) : (
+                  questionPanel
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ================================================================== */}
         {/* VIEW 3: TEST REVIEW & COGNITIVE RESULTS */}
@@ -1351,7 +1423,17 @@ export const TestsPage: React.FC = () => {
                         </span>
                       </div>
 
-                      <p className="text-sm font-medium text-[#18191B]">{q.text}</p>
+                      {(() => {
+                        const parsedQ = parseQuestionContent(q.text, q.code, q.code_language);
+                        return (
+                          <div className="space-y-3">
+                            <FormattedQuestionPrompt text={parsedQ.promptText} compact />
+                            {parsedQ.hasCode && (
+                              <CodePanel codeBlocks={parsedQ.codeBlocks} className="max-h-64" />
+                            )}
+                          </div>
+                        );
+                      })()}
 
                       {/* Options Review */}
                       <div className="space-y-1.5 text-xs">
@@ -1370,7 +1452,8 @@ export const TestsPage: React.FC = () => {
                                 }`}
                             >
                               <span>
-                                <strong>{String.fromCharCode(65 + optIdx)}.</strong> {opt}
+                                <strong>{String.fromCharCode(65 + optIdx)}.</strong>{" "}
+                                <FormattedInlineText text={opt} />
                               </span>
                               {isKey && <span className="font-mono text-[10px] uppercase font-semibold">Correct Answer</span>}
                               {isStudentPick && !isCorrect && (
@@ -1447,13 +1530,14 @@ export const TestsPage: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 border-t border-[#E4DFD5] mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-[#666C7A]">
-        <div className="flex items-center gap-2">
-          <GraduationCapIcon size={14} className="text-[#1E3A2F]" />
-          <span>IATS Intelligent Academic Testing System &copy; 2026</span>
-        </div>
-     
-      </footer>
+      {viewMode !== "active-test" && (
+        <footer className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 border-t border-[#E4DFD5] mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-[#666C7A]">
+          <div className="flex items-center gap-2">
+            <GraduationCapIcon size={14} className="text-[#1E3A2F]" />
+            <span>IATS Intelligent Academic Testing System &copy; 2026</span>
+          </div>
+        </footer>
+      )}
     </div>
   );
 };
