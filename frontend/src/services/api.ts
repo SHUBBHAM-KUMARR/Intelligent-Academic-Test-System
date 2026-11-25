@@ -14,6 +14,8 @@ export interface QuestionData {
   source_citation?: string;
   points?: number;
   difficulty?: string;
+  code?: string;
+  code_language?: string;
 }
 
 export interface TestData {
